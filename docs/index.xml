@@ -12,7 +12,16 @@
     
     
     <item>
-      <title>RTL編</title>
+      <title>ボード概要</title>
+      <link>https://e-trees.github.io/exstickge_guide/docs/about/board_overview/</link>
+      <pubDate>Wed, 30 Oct 2019 19:15:46 +0900</pubDate>
+      
+      <guid>https://e-trees.github.io/exstickge_guide/docs/about/board_overview/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>インストール</title>
       <link>https://e-trees.github.io/exstickge_guide/docs/setup/installation/</link>
       <pubDate>Wed, 30 Oct 2019 19:15:46 +0900</pubDate>
       

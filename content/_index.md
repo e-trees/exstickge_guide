@@ -5,6 +5,10 @@ type: docs
 
 # exStickGE Quick Guide
 
+## exStickGEについて
+
+- [ボード概要]({{< ref "/docs/about/board_overview.md" >}})
+
 ## セットアップ
 
 - [インストール]({{< ref "/docs/setup/installation.md" >}})

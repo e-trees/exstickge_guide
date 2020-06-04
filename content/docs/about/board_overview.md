@@ -1,10 +1,10 @@
 ---
-title: "インストール"
+title: "ボード概要"
 date: 2019-10-30T19:15:46+09:00
 type: docs
 draft: false
-weight: -5000
+weight: -8000
 bookToc: false
 ---
 
-# インストール
+# ボード概要
