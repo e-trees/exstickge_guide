@@ -1,4 +1,4 @@
 baseURL = "https://e-trees.github.io/exstickge_guide/"
 languageCode = "en-us"
-title = "Learning FPGA"
+title = "exStickGE Guide"
 publishDir = "docs"
