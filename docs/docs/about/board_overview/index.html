@@ -4,7 +4,11 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta property="og:title" content="ボード概要" />
-<meta property="og:description" content="ボード概要 " />
+<meta property="og:description" content="ボード概要 exStickGE - UDP/IPを手軽に利用できるFPGAボード exStickGEは，Artix-7を搭載したギガビットイーサネットポートを持つFPGAボードです．同梱のe7UDP/IP IPコアを使うことで，簡単にネットワーク接続アプリケーション実装できます．拡張コネクタで約80ポートのI/Oを利用できます．標準構成では，HDMIおよびMIPI-CSIポートを搭載したビジョンボードとの組合せで提供されます．
+ メイン基板 メイン基板は，FPGAとイーサネットポートを搭載するシンプルな構成です．LEDやスイッチ，PMODポートを搭載しています．DC 5Vを供給して利用します．
+ FPGAの裏には，256MBのDDRメモリと拡張コネクタを搭載しています．
+ メイン基板搭載部品    　 型番・パラメタ     FPGA XC7A200TSBG484-2   コンフィグROM MT25QL128ABA1ESE-0SIT   ユーザクロック 200MHz   DDRメモリ MT41K128M16JT-125   Ethernet PHY RTL8211E-VB   電源コネタク DF1B-2P-2.5DS(1ピン: 5V, 2ピン: GND)   拡張コネクタ DF40C-100DP-0.4V    ビジョン基板 ビジョン基板は拡張コネクタの先に接続できる画像処理アプリケーション実装向けのボードです．HDMIポートとMIPI CSI-2をそれぞれ2ポートずつ搭載します．また2.54mmピッチ40ピンコネタクを介して，26ポートのGPIOを利用できます．
+ 参考リンク 製品の詳細は，e-trees.Japanの製品ページ101「exStickGE」もご覧ください．また，製品についての問い合わせは，e-trees.Japanの問い合わせフォームよりご連絡ください．" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://e-trees.github.io/exstickge_guide/docs/about/board_overview/" />
 <meta property="article:published_time" content="2019-10-30T19:15:46+09:00" />
@@ -16,7 +20,7 @@
 <link rel="stylesheet" href="/exstickge_guide/book.min.92b28337361d2bcca5e0ffaff5092dda7140e89d9a7a7a4dcc6055fd7d702ace.css" integrity="sha256-krKDNzYdK8yl4P&#43;v9Qkt2nFA6J2aenpNzGBV/X1wKs4=">
 
 
-<script defer src="/exstickge_guide/search.min.0a668007f3425272d7fa86eee49cf197bd386ba6b9ae544f0f1d02bc00e45294.js" integrity="sha256-CmaAB/NCUnLX&#43;obu5Jzxl704a6a5rlRPDx0CvADkUpQ="></script>
+<script defer src="/exstickge_guide/search.min.19fd935beec6ace0771be6170b83946f46c79f338ba982c48e56bc9b5874e4d4.js" integrity="sha256-Gf2TW&#43;7GrOB3G&#43;YXC4OUb0bHnzOLqYLEjla8m1h05NQ="></script>
 
 <!--
 Made with Book Theme
@@ -129,6 +133,70 @@ https://github.com/alex-shpak/hugo-book
 
       
 <article class="markdown"><h1 id="ボード概要">ボード概要</h1>
+<h2 id="exstickge---udpipを手軽に利用できるfpgaボード">exStickGE - UDP/IPを手軽に利用できるFPGAボード</h2>
+<p>exStickGEは，Artix-7を搭載したギガビットイーサネットポートを持つFPGAボードです．同梱のe7UDP/IP IPコアを使うことで，簡単にネットワーク接続アプリケーション実装できます．拡張コネクタで約80ポートのI/Oを利用できます．標準構成では，HDMIおよびMIPI-CSIポートを搭載したビジョンボードとの組合せで提供されます．</p>
+<figure class="center">
+    <img src="../figures/exstickge.png" width="480"/> 
+</figure>
+
+<h2 id="メイン基板">メイン基板</h2>
+<p>メイン基板は，FPGAとイーサネットポートを搭載するシンプルな構成です．LEDやスイッチ，PMODポートを搭載しています．DC 5Vを供給して利用します．</p>
+<figure class="center">
+    <img src="../figures/exstickge_main_a.png" width="480"/> 
+</figure>
+
+<p>FPGAの裏には，256MBのDDRメモリと拡張コネクタを搭載しています．</p>
+<figure class="center">
+    <img src="../figures/exstickge_main_b.png" width="480"/> 
+</figure>
+
+<h3 id="メイン基板搭載部品">メイン基板搭載部品</h3>
+<table>
+<thead>
+<tr>
+<th>　　</th>
+<th>型番・パラメタ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FPGA</td>
+<td>XC7A200TSBG484-2</td>
+</tr>
+<tr>
+<td>コンフィグROM</td>
+<td>MT25QL128ABA1ESE-0SIT</td>
+</tr>
+<tr>
+<td>ユーザクロック</td>
+<td>200MHz</td>
+</tr>
+<tr>
+<td>DDRメモリ</td>
+<td>MT41K128M16JT-125</td>
+</tr>
+<tr>
+<td>Ethernet PHY</td>
+<td>RTL8211E-VB</td>
+</tr>
+<tr>
+<td>電源コネタク</td>
+<td>DF1B-2P-2.5DS(1ピン: 5V, 2ピン: GND)</td>
+</tr>
+<tr>
+<td>拡張コネクタ</td>
+<td>DF40C-100DP-0.4V</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ビジョン基板">ビジョン基板</h2>
+<p>ビジョン基板は拡張コネクタの先に接続できる画像処理アプリケーション実装向けのボードです．HDMIポートとMIPI CSI-2をそれぞれ2ポートずつ搭載します．また2.54mmピッチ40ピンコネタクを介して，26ポートのGPIOを利用できます．</p>
+<figure class="center">
+    <img src="../figures/exstickge_vision.png" width="480"/> 
+</figure>
+
+<h2 id="参考リンク">参考リンク</h2>
+<p>製品の詳細は，e-trees.Japanの製品ページ<a href="https://e-trees.jp/exstickge-2/">101「exStickGE」</a>もご覧ください．また，製品についての問い合わせは，e-trees.Japanの<a href="https://e-trees.jp/contact/">問い合わせ</a>フォームよりご連絡ください．</p>
 </article>
 
       
@@ -138,6 +206,21 @@ https://github.com/alex-shpak/hugo-book
 
     
   
+
+  <aside class="book-toc levels-true fixed">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#exstickge---udpipを手軽に利用できるfpgaボード">exStickGE - UDP/IPを手軽に利用できるFPGAボード</a></li>
+    <li><a href="#メイン基板">メイン基板</a>
+      <ul>
+        <li><a href="#メイン基板搭載部品">メイン基板搭載部品</a></li>
+      </ul>
+    </li>
+    <li><a href="#ビジョン基板">ビジョン基板</a></li>
+    <li><a href="#参考リンク">参考リンク</a></li>
+  </ul>
+</nav>
+  </aside>
 
 
 
