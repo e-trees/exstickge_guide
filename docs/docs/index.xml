@@ -30,7 +30,15 @@
       <pubDate>Wed, 30 Oct 2019 19:15:46 +0900</pubDate>
       
       <guid>https://e-trees.github.io/exstickge_guide/docs/setup/installation/</guid>
-      <description>インストール </description>
+      <description>インストール 電源の接続 exStickGEを利用するためには，CN4から5Vの電源を投入する必要があります．CN4のピン配置は次の通りです．
+ 附属の電源ケーブルを利用する場合は，
+   項目 スペック     外径 5.5mm   内径 2.1mm   極性 センタープラス   出力電圧 5V   出力電流 2A以上を推奨    に適合したACアダプタを利用してください．
+JTAGアダプタ FPGAのコンフィギュレーションおよびROMへの書き込み時は，CN5にXilinxの書き込みアダプタを接続してください．ピン穴が千鳥になっているため半田付けしなくともピンヘッダを挿入するだけで書き込みができます．
+ピン配置は次の通りです．Digilent社のJTAG-HS2プログラミングケーブルを直接利用できます．
+ 開発ソフトウェア FPGAの開発にはVivadoを利用してください．搭載しているFPGA XC7A200TSBG484-2は無償で利用可能なWebPackで開発できます．
+ボード定義ファイル exStickGEのボード定義ファイルを https://github.com/e-trees/board_files からダウンロードして利用できます．利用する場合は，以下のように，ダウンロードしたファイルを解凍しVivadoのボードファイルディレクトリの下にコピーしてください．
+$ wget https://github.com/e-trees/board_files/archive/master.zip $ unzip master.zip $ sudo mv board_files-master/board_files/exstickge /tools/Xilinx/Vivado/2020.1/data/boards/board_files/ 制約ファイルのサンプル 以下はVivado用の制約ファイル(XDCファイル)の例です．拡張コネタクタにビジョン基板を接続していることを想定しています．
+# # Main board # # SYSY CLK 200MHz set_property -dict {PACKAGE_PIN H4 IOSTANDARD LVDS_25} [get_ports SYS_CLK_P] set_property -dict {PACKAGE_PIN G4 IOSTANDARD LVDS_25} [get_ports SYS_CLK_N] create_clock -period 5.</description>
     </item>
     
   </channel>

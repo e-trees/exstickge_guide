@@ -4,7 +4,15 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta property="og:title" content="インストール" />
-<meta property="og:description" content="インストール " />
+<meta property="og:description" content="インストール 電源の接続 exStickGEを利用するためには，CN4から5Vの電源を投入する必要があります．CN4のピン配置は次の通りです．
+ 附属の電源ケーブルを利用する場合は，
+   項目 スペック     外径 5.5mm   内径 2.1mm   極性 センタープラス   出力電圧 5V   出力電流 2A以上を推奨    に適合したACアダプタを利用してください．
+JTAGアダプタ FPGAのコンフィギュレーションおよびROMへの書き込み時は，CN5にXilinxの書き込みアダプタを接続してください．ピン穴が千鳥になっているため半田付けしなくともピンヘッダを挿入するだけで書き込みができます．
+ピン配置は次の通りです．Digilent社のJTAG-HS2プログラミングケーブルを直接利用できます．
+ 開発ソフトウェア FPGAの開発にはVivadoを利用してください．搭載しているFPGA XC7A200TSBG484-2は無償で利用可能なWebPackで開発できます．
+ボード定義ファイル exStickGEのボード定義ファイルを https://github.com/e-trees/board_files からダウンロードして利用できます．利用する場合は，以下のように，ダウンロードしたファイルを解凍しVivadoのボードファイルディレクトリの下にコピーしてください．
+$ wget https://github.com/e-trees/board_files/archive/master.zip $ unzip master.zip $ sudo mv board_files-master/board_files/exstickge /tools/Xilinx/Vivado/2020.1/data/boards/board_files/ 制約ファイルのサンプル 以下はVivado用の制約ファイル(XDCファイル)の例です．拡張コネタクタにビジョン基板を接続していることを想定しています．
+# # Main board # # SYSY CLK 200MHz set_property -dict {PACKAGE_PIN H4 IOSTANDARD LVDS_25} [get_ports SYS_CLK_P] set_property -dict {PACKAGE_PIN G4 IOSTANDARD LVDS_25} [get_ports SYS_CLK_N] create_clock -period 5." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://e-trees.github.io/exstickge_guide/docs/setup/installation/" />
 <meta property="article:published_time" content="2019-10-30T19:15:46+09:00" />
@@ -16,7 +24,7 @@
 <link rel="stylesheet" href="/exstickge_guide/book.min.92b28337361d2bcca5e0ffaff5092dda7140e89d9a7a7a4dcc6055fd7d702ace.css" integrity="sha256-krKDNzYdK8yl4P&#43;v9Qkt2nFA6J2aenpNzGBV/X1wKs4=">
 
 
-<script defer src="/exstickge_guide/search.min.19fd935beec6ace0771be6170b83946f46c79f338ba982c48e56bc9b5874e4d4.js" integrity="sha256-Gf2TW&#43;7GrOB3G&#43;YXC4OUb0bHnzOLqYLEjla8m1h05NQ="></script>
+<script defer src="/exstickge_guide/search.min.b36363b01f1f305c61a6f3428a5930b44e4d3e3b2fcdcc878461230d51f47b7f.js" integrity="sha256-s2NjsB8fMFxhpvNCilkwtE5NPjsvzcyHhGEjDVH0e38="></script>
 
 <!--
 Made with Book Theme
@@ -129,7 +137,231 @@ https://github.com/alex-shpak/hugo-book
 
       
 <article class="markdown"><h1 id="インストール">インストール</h1>
-</article>
+<h2 id="電源の接続">電源の接続</h2>
+<p>exStickGEを利用するためには，CN4から5Vの電源を投入する必要があります．CN4のピン配置は次の通りです．</p>
+<figure class="center">
+    <img src="../figures/power_suply.png" width="350"/> 
+</figure>
+
+<p>附属の電源ケーブルを利用する場合は，</p>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>スペック</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>外径</td>
+<td>5.5mm</td>
+</tr>
+<tr>
+<td>内径</td>
+<td>2.1mm</td>
+</tr>
+<tr>
+<td>極性</td>
+<td>センタープラス</td>
+</tr>
+<tr>
+<td>出力電圧</td>
+<td>5V</td>
+</tr>
+<tr>
+<td>出力電流</td>
+<td>2A以上を推奨</td>
+</tr>
+</tbody>
+</table>
+<p>に適合したACアダプタを利用してください．</p>
+<h2 id="jtagアダプタ">JTAGアダプタ</h2>
+<p>FPGAのコンフィギュレーションおよびROMへの書き込み時は，CN5にXilinxの書き込みアダプタを接続してください．ピン穴が千鳥になっているため半田付けしなくともピンヘッダを挿入するだけで書き込みができます．</p>
+<p>ピン配置は次の通りです．<a href="https://store.digilentinc.com/jtag-hs2-programming-cable/">Digilent社のJTAG-HS2プログラミングケーブル</a>を直接利用できます．</p>
+<figure class="center">
+    <img src="../figures/jtag_connector.png" width="240"/> 
+</figure>
+
+<h2 id="開発ソフトウェア">開発ソフトウェア</h2>
+<p>FPGAの開発には<a href="https://www.xilinx.com/products/design-tools/vivado.html">Vivado</a>を利用してください．搭載しているFPGA XC7A200TSBG484-2は無償で利用可能なWebPackで開発できます．</p>
+<h2 id="ボード定義ファイル">ボード定義ファイル</h2>
+<p>exStickGEのボード定義ファイルを <a href="https://github.com/e-trees/board_files">https://github.com/e-trees/board_files</a> からダウンロードして利用できます．利用する場合は，以下のように，ダウンロードしたファイルを解凍しVivadoのボードファイルディレクトリの下にコピーしてください．</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ wget https://github.com/e-trees/board_files/archive/master.zip
+$ unzip master.zip
+$ sudo mv board_files-master/board_files/exstickge /tools/Xilinx/Vivado/2020.1/data/boards/board_files/
+</code></pre></div><h2 id="制約ファイルのサンプル">制約ファイルのサンプル</h2>
+<p>以下はVivado用の制約ファイル(XDCファイル)の例です．拡張コネタクタにビジョン基板を接続していることを想定しています．</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-file=exstickge.tcl" data-lang="file=exstickge.tcl"><span style="color:#75715e">#</span>
+<span style="color:#75715e"># Main board
+</span><span style="color:#75715e">#
+</span><span style="color:#75715e">
+</span><span style="color:#75715e"># SYSY CLK 200MHz
+</span><span style="color:#75715e"></span>set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN H4 IOSTANDARD LVDS_25<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports SYS_CLK_P<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN G4 IOSTANDARD LVDS_25<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports SYS_CLK_N<span style="color:#66d9ef">]</span>
+create_clock <span style="color:#f92672">-</span>period <span style="color:#ae81ff">5.000</span> <span style="color:#f92672">-</span>name clk_pin <span style="color:#f92672">-</span>waveform <span style="color:#66d9ef">{</span>0.000 <span style="color:#ae81ff">2.500</span><span style="color:#66d9ef">}</span> <span style="color:#f92672">-</span>add <span style="color:#66d9ef">[</span>get_ports SYS_CLK_P<span style="color:#66d9ef">]</span>
+
+<span style="color:#75715e"># ON BOARD LEDs
+</span><span style="color:#75715e"></span>set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN E21 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>LED<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN D21 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>LED<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN G22 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>LED<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+
+<span style="color:#75715e"># PUSH BUBTTON
+</span><span style="color:#75715e"></span>set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN D19 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports PUSH_BTN<span style="color:#66d9ef">]</span>
+
+<span style="color:#75715e"># PMOD
+</span><span style="color:#75715e"></span>set_property <span style="color:#66d9ef">{</span>PACKAGE_PIN R18 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>PMOD<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#66d9ef">{</span>PACKAGE_PIN T18 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>PMOD<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#66d9ef">{</span>PACKAGE_PIN N17 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>PMOD<span style="color:#66d9ef">[</span>3<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#66d9ef">{</span>PACKAGE_PIN P17 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>PMOD<span style="color:#66d9ef">[</span>4<span style="color:#66d9ef">]}]</span>
+
+<span style="color:#75715e"># Ethernet
+</span><span style="color:#75715e"></span>set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AA14 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>GEPHY_RD<span style="color:#66d9ef">[</span>3<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN Y13  IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>GEPHY_RD<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AB15 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>GEPHY_RD<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AA15 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>GEPHY_RD<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AB17 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>GEPHY_TD<span style="color:#66d9ef">[</span>3<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AB16 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>GEPHY_TD<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AA16 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>GEPHY_TD<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN Y16  IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>GEPHY_TD<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN T16  IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GEPHY_PMEB<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN Y11  IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GEPHY_RCK<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN U16  IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GEPHY_RST_N<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AA9  IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GEPHY_RXDV_ER<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AB13 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GEPHY_TCK<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AA13 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GEPHY_TXEN_ER<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AA11 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GEPHY_INT_N<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AA10 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GEPHY_MDC<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AB10 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GEPHY_MDIO<span style="color:#66d9ef">]</span>
+create_clock <span style="color:#f92672">-</span>period <span style="color:#ae81ff">8.000</span> <span style="color:#f92672">-</span>name rgmii_rxclk <span style="color:#f92672">-</span>waveform <span style="color:#66d9ef">{</span>0.000 <span style="color:#ae81ff">4.000</span><span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GEPHY_RCK<span style="color:#66d9ef">]</span>
+
+<span style="color:#75715e"># DRAM
+</span><span style="color:#75715e"></span>set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN U5<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN T5<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN W4<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN V4<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>3<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN AA4<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>4<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN Y4<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>5<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN AB5<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>6<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN AA5<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>7<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN AA3<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>8<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN Y3<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>9<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN AB2<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>10<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN AB3<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>11<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN AB1<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>12<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN AA1<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_addr<span style="color:#66d9ef">[</span>13<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN U6<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_ba<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN W5<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_ba<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN W6<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_ba<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN U1<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_dq<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN U2<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_dq<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN V2<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_dq<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN W2<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_dq<span style="color:#66d9ef">[</span>3<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN Y2<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_dq<span style="color:#66d9ef">[</span>4<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN W1<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_dq<span style="color:#66d9ef">[</span>5<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN Y1<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_dq<span style="color:#66d9ef">[</span>6<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN U3<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_dq<span style="color:#66d9ef">[</span>7<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN AA6<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_cke<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN Y6<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_cs_n<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN T6<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports ddr3_we_n<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN R6<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports ddr3_cas_n<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN T1<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_dm<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN V7<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_odt<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD SSTL15 PACKAGE_PIN V5<span style="color:#66d9ef">}</span>  <span style="color:#66d9ef">[</span>get_ports ddr3_ras_n<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD DIFF_SSTL15 PACKAGE_PIN V8<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_ck_n<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD DIFF_SSTL15 PACKAGE_PIN V9<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_ck_p<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD DIFF_SSTL15 PACKAGE_PIN R2<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_dqs_n<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD DIFF_SSTL15 PACKAGE_PIN R3<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>ddr3_dqs_p<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>IOSTANDARD LVCMOS15 PACKAGE_PIN R4<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports ddr3_reset_n<span style="color:#66d9ef">]</span>
+
+<span style="color:#75715e">#</span>
+<span style="color:#75715e"># Vision board
+</span><span style="color:#75715e">#</span>
+<span style="color:#75715e"># HDMI CN2
+</span><span style="color:#75715e"></span>set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN V20 IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN2_Clk_n<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN U20 IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN2_Clk_p<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN V22 IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN2_Data_n<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN U22 IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN2_Data_p<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN U21 IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN2_Data_n<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN T21 IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN2_Data_p<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN R19 IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN2_Data_n<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN P19 IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN2_Data_p<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN W21 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN2_SCL<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN W22 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN2_SDA<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN A21 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN2_OUT_EN<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN B21 IOSTANDARD LVCMOS33 PULLUP true<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN2_HPD<span style="color:#66d9ef">]</span>
+
+<span style="color:#75715e"># HDMI CN3
+</span><span style="color:#75715e"></span>set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN W20  IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN3_Clk_n<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN W19  IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN3_Clk_p<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN Y19  IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN3_Data_n<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN Y18  IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN3_Data_p<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN V19  IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN3_Data_n<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN V18  IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN3_Data_p<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AB20 IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN3_Data_n<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AA19 IOSTANDARD TMDS_33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>TMDS_CN3_Data_p<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AA20 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN3_SCL<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN AA21 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN3_SDA<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN D22  IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN3_OUT_EN<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN E22 IOSTANDARD LVCMOS33 PULLUP true<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports TMDS_CN3_HPD<span style="color:#66d9ef">]</span>
+
+<span style="color:#75715e"># GPIO
+</span><span style="color:#75715e"></span>set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN C14 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO00<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN C15 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO01<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN D14 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO02<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN D15 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO03<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN B15 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO04<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN B16 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO05<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN C13 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO06<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN B13 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO07<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN A15 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO10<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN A16 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO11<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN A13 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO12<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN A14 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO13<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN B17 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO14<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN B18 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO15<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN C18 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO20<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN C19 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO21<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN B20 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO22<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN A20 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO23<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN A18 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO24<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN A19 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO25<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN D20 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO26<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN C20 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO27<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN C22 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO30<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN B22 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO31<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN G17 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO40<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN G18 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO41<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN H17 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO42<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN H18 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO43<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN J22 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO44<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN H22 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO45<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN H20 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO46<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN G20 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO47<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN K21 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO50<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN K22 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO51<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN M21 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO52<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN L21 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO53<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN J20 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO54<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN J21 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO55<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN K18 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO60<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN K19 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO61<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN L19 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO62<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN L20 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO63<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN N22 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO64<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN M22 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO65<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN M18 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO66<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN L18 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO67<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN N18 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO70<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN N19 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO71<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN N20 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO72<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN M20 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO73<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN K17 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO74<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN J17 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports GPIO75<span style="color:#66d9ef">]</span>
+
+set_property BITSTREAM.CONFIG.CONFIGRATE <span style="color:#ae81ff">33</span> <span style="color:#66d9ef">[</span>current_design<span style="color:#66d9ef">]</span>
+set_property BITSTREAM.CONFIG.SPI_BUSWIDTH <span style="color:#ae81ff">4</span> <span style="color:#66d9ef">[</span>current_design<span style="color:#66d9ef">]</span>
+set_property BITSTREAM.GENERAL.COMPRESS TRUE <span style="color:#66d9ef">[</span>current_design<span style="color:#66d9ef">]</span>
+</code></pre></div></article>
 
       
 
@@ -138,6 +370,18 @@ https://github.com/alex-shpak/hugo-book
 
     
   
+
+  <aside class="book-toc levels-true fixed">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#電源の接続">電源の接続</a></li>
+    <li><a href="#jtagアダプタ">JTAGアダプタ</a></li>
+    <li><a href="#開発ソフトウェア">開発ソフトウェア</a></li>
+    <li><a href="#ボード定義ファイル">ボード定義ファイル</a></li>
+    <li><a href="#制約ファイルのサンプル">制約ファイルのサンプル</a></li>
+  </ul>
+</nav>
+  </aside>
 
 
 
