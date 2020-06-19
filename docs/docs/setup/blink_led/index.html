@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><meta property="og:title" content="exStickGEでLチカ" />
+<meta property="og:description" content="exStickGEでLチカ ボードの動作確認のために，exStickGEのLEDをチカチカさせてみましょう．ここでは，サンプルコードをVivadoを使って合成してFPGA用のビットファイルを作成，exStickGEで動かしてみるまでの手順を紹介します．
+ソースコード exStickGEのメインボードに搭載されている3つのLEDを順に点灯させる次のようなモジュールでLチカしてみましょう．これを blinkled.v という名前で保存します．
+`default_nettype none module blinkled ( input wire SYS_CLK_P, input wire SYS_CLK_N, input wire PUSH_BTN, output wire [2:0] LED ); reg[31:0] counter; wire SYS_CLK; IBUFDS SYS_CLK_BUF(.I(SYS_CLK_P),.IB(SYS_CLK_N),.O(SYS_CLK)); assign LED = counter[26:25] == 2&#39;b01 ? 3&#39;b001 : counter[26:25] == 2&#39;b10 ? 3&#39;b010 : counter[26:25] == 2&#39;b11 ? 3&#39;b100 : 3&#39;b000; always @(posedge SYS_CLK) begin if(PUSH_BTN == 1&#39;b0) begin counter &lt;= 32&#39;d0; end else begin counter &lt;= counter &#43; 32&#39;d1; end end endmodule `default_nettype wire また，ピン配置の制約を以下のように与えます．こちらはexstickge." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://e-trees.github.io/exstickge_guide/docs/setup/blink_led/" />
+<meta property="article:published_time" content="2019-10-30T19:15:46+09:00" />
+<meta property="article:modified_time" content="2019-10-30T19:15:46+09:00" />
+<title>exStickGEでLチカ | exStickGE Guide</title>
+<link rel="icon" href="/exstickge_guide/favicon.png" type="image/x-icon">
+
+
+<link rel="stylesheet" href="/exstickge_guide/book.min.92b28337361d2bcca5e0ffaff5092dda7140e89d9a7a7a4dcc6055fd7d702ace.css" integrity="sha256-krKDNzYdK8yl4P&#43;v9Qkt2nFA6J2aenpNzGBV/X1wKs4=">
+
+
+<script defer src="/exstickge_guide/search.min.bc71eecc57fb0229229df67f8cc50af8b7592a9716bf637f30b12eb845ccf0fd.js" integrity="sha256-vHHuzFf7AikinfZ/jMUK&#43;LdZKpcWv2N/MLEuuEXM8P0="></script>
+
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body>
+  <input type="checkbox" class="hidden" id="menu-control" />
+  <main class="flex container">
+
+    <aside class="book-menu fixed">
+      <nav>
+<h2 class="book-brand">
+  <a href="https://e-trees.github.io/exstickge_guide/"><span>exStickGE Guide</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" placeholder="Search" id="book-search-input" maxlength="64" />
+  <div class="book-search-spinner spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+    
+
+  
+  
+
+
+
+
+
+ 
+  
+    
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/about/board_overview/" >
+      ボード概要
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/setup/installation/" >
+      インストール
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/setup/blink_led/"  class="active">
+      exStickGEでLチカ
+  </a>
+
+</li>
+      
+    
+  </ul>
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+<script>
+(function() {
+  var menu = document.querySelector("aside.book-menu nav");
+  addEventListener("beforeunload", function(event) {
+    localStorage.setItem("menu.scrollTop", menu.scrollTop);
+  });
+  menu.scrollTop = localStorage.getItem("menu.scrollTop");
+})();
+</script>
+
+    </aside>
+
+    <div class="book-page">
+      <header class="flex align-center justify-between book-header">
+  <label for="menu-control">
+    <img src="/exstickge_guide/svg/menu.svg" alt="Menu" />
+  </label>
+  <strong>exStickGEでLチカ</strong>
+</header>
+
+      
+<article class="markdown"><h1 id="exstickgeでlチカ">exStickGEでLチカ</h1>
+<p>ボードの動作確認のために，exStickGEのLEDをチカチカさせてみましょう．ここでは，サンプルコードをVivadoを使って合成してFPGA用のビットファイルを作成，exStickGEで動かしてみるまでの手順を紹介します．</p>
+<h2 id="ソースコード">ソースコード</h2>
+<p>exStickGEのメインボードに搭載されている3つのLEDを順に点灯させる次のようなモジュールでLチカしてみましょう．これを <code>blinkled.v</code> という名前で保存します．</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-blinkled.v" data-lang="blinkled.v"><span style="color:#f92672">`</span>default_nettype none
+
+module blinkled
+  <span style="color:#f92672">(</span>
+   input wire SYS_CLK_P<span style="color:#f92672">,</span>
+   input wire SYS_CLK_N<span style="color:#f92672">,</span>
+   input wire PUSH_BTN<span style="color:#f92672">,</span>
+   output wire <span style="color:#f92672">[</span>2<span style="color:#f92672">:</span>0<span style="color:#f92672">]</span> LED
+   <span style="color:#f92672">);</span>
+    
+    reg<span style="color:#f92672">[</span>31<span style="color:#f92672">:</span>0<span style="color:#f92672">]</span> counter<span style="color:#f92672">;</span>
+    wire SYS_CLK<span style="color:#f92672">;</span>
+
+    IBUFDS SYS_CLK_BUF<span style="color:#f92672">(.</span>I<span style="color:#f92672">(</span>SYS_CLK_P<span style="color:#f92672">),.</span>IB<span style="color:#f92672">(</span>SYS_CLK_N<span style="color:#f92672">),.</span>O<span style="color:#f92672">(</span>SYS_CLK<span style="color:#f92672">));</span>
+					   
+    assign LED <span style="color:#f92672">=</span> counter<span style="color:#f92672">[</span>26<span style="color:#f92672">:</span>25<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> 2&#39;b01 <span style="color:#f92672">?</span> 3&#39;b001 <span style="color:#f92672">:</span>
+                 counter<span style="color:#f92672">[</span>26<span style="color:#f92672">:</span>25<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> 2&#39;b10 <span style="color:#f92672">?</span> 3&#39;b010 <span style="color:#f92672">:</span>
+                 counter<span style="color:#f92672">[</span>26<span style="color:#f92672">:</span>25<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> 2&#39;b11 <span style="color:#f92672">?</span> 3&#39;b100 <span style="color:#f92672">:</span>
+                 3&#39;b000<span style="color:#f92672">;</span>
+    
+    always <span style="color:#f92672">@(</span>posedge SYS_CLK<span style="color:#f92672">)</span> begin
+        <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>PUSH_BTN <span style="color:#f92672">==</span> 1&#39;b0<span style="color:#f92672">)</span> begin
+	        counter <span style="color:#f92672">&lt;=</span> 32&#39;d0<span style="color:#f92672">;</span>
+	    <span style="color:#66d9ef">end</span> <span style="color:#66d9ef">else</span> begin
+	        counter <span style="color:#f92672">&lt;=</span> counter <span style="color:#f92672">+</span> 32&#39;d1<span style="color:#f92672">;</span>
+	    <span style="color:#66d9ef">end</span>
+    <span style="color:#66d9ef">end</span>
+
+endmodule
+
+<span style="color:#f92672">`</span>default_nettype wire
+</code></pre></div><p>また，ピン配置の制約を以下のように与えます．こちらは<code>exstickge.xdc</code>という名前で保存しておきます．</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-tcl" data-lang="tcl"><span style="color:#75715e"># SYSY CLK 200MHz
+</span><span style="color:#75715e"></span>set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN H4 IOSTANDARD LVDS_25<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports SYS_CLK_P<span style="color:#66d9ef">]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN G4 IOSTANDARD LVDS_25<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports SYS_CLK_N<span style="color:#66d9ef">]</span>
+create_clock <span style="color:#f92672">-</span>period <span style="color:#ae81ff">5.000</span> <span style="color:#f92672">-</span>name clk_pin <span style="color:#f92672">-</span>waveform <span style="color:#66d9ef">{</span>0.000 <span style="color:#ae81ff">2.500</span><span style="color:#66d9ef">}</span> <span style="color:#f92672">-</span>add <span style="color:#66d9ef">[</span>get_ports SYS_CLK_P<span style="color:#66d9ef">]</span>
+
+<span style="color:#75715e"># ON BOARD LEDs
+</span><span style="color:#75715e"></span>set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN E21 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>LED<span style="color:#66d9ef">[</span>0<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN D21 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>LED<span style="color:#66d9ef">[</span>1<span style="color:#66d9ef">]}]</span>
+set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN G22 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports <span style="color:#66d9ef">{</span>LED<span style="color:#66d9ef">[</span>2<span style="color:#66d9ef">]}]</span>
+
+<span style="color:#75715e"># PUSH BUBTTON
+</span><span style="color:#75715e"></span>set_property <span style="color:#f92672">-</span>dict <span style="color:#66d9ef">{</span>PACKAGE_PIN D19 IOSTANDARD LVCMOS33<span style="color:#66d9ef">}</span> <span style="color:#66d9ef">[</span>get_ports PUSH_BTN<span style="color:#66d9ef">]</span>
+</code></pre></div><h2 id="vivadoでプロジェクトを作成">Vivadoでプロジェクトを作成</h2>
+<p>exStickGE向けのビットファイルを作成するためにVivadoのプロジェクトを作成します．
+Vivadoを起動して <code>Create Project</code> をクリックしてウィザードを開きます．
+<figure class="center">
+    <img src="../figures/start_vivado.png" width="700"/> 
+</figure>
+</p>
+<p>プロジェクト作成のウィザードが開きました．<code>Next</code>で次にすすみます．
+<figure class="center">
+    <img src="../figures/start_to_create_prj.png" width="500"/> 
+</figure>
+
+プロジェクト名と保存先のディレクトリを指定します．ここでは<code>exstickge_blinkled</code>という名前をつけています．
+<figure class="center">
+    <img src="../figures/set_prj_name.png" width="500"/> 
+</figure>
+
+プロジェクトのタイプはデフォルトの <code>RTL Project</code> のまますすみます．
+<figure class="center">
+    <img src="../figures/select_prj_type.png" width="500"/> 
+</figure>
+
+プロジェクトに追加するソースコードファイルを選択できます．ここではスキップして，そのまま <code>Next</code> をクリックします．
+<figure class="center">
+    <img src="../figures/skip_src.png" width="350"/> 
+</figure>
+
+プロジェクトに追加する制約ファイルを選択できます．ここではスキップして，そのまま <code>Next</code> をクリックします．
+<figure class="center">
+    <img src="../figures/skip_xdc.png" width="350"/> 
+</figure>
+
+<code>Default Part</code>で，利用するFPGAを選択します．exStickGE用のボードファイルをインストールしていれば，<code>Boards</code>タブから，<code>exStickGE</code>を選択できます．
+<figure class="center">
+    <img src="../figures/select_exstickge.png" width="500"/> 
+</figure>
+
+exStickGE用のボードファイルをインストールしていない場合は<code>Parts</code>タブで<code>xc7a200tsbg484-2</code>を選びます．
+<figure class="center">
+    <img src="../figures/select_artix.png" width="500"/> 
+</figure>
+
+プロジェクト作成ウィザードのサマリです．プロジェクト名，保存先ディレクトリ，正しくFPGAが選択できているかを確認して<code>Done</code>をクリックします．
+<figure class="center">
+    <img src="../figures/prj_summary.png" width="500"/> 
+</figure>
+</p>
+<h2 id="ファイルの追加">ファイルの追加</h2>
+<p>プロジェクトの作成が終わったところです．
+ウィンドウ左のFlow Navigatorペインにある<code>Add Sources</code>をクリックしてファイルを追加します．
+<figure class="center">
+    <img src="../figures/after_creating_prj.png" width="600"/> 
+</figure>
+
+まずは，ソースコードファイルを追加したいので，<code>Add or create design sources</code>を選択して<code>Next</code>をクリックします．
+<figure class="center">
+    <img src="../figures/wizard_to_add_src.png" width="500"/> 
+</figure>
+
+ファイル追加ダイアログが開くので，<code>Add Files</code>をクリックします．
+<figure class="center">
+    <img src="../figures/add_source_1.png" width="500"/> 
+</figure>
+
+追加するファイルをファイル選択ダイアログで選びます．冒頭で紹介した<code>blink_led.v</code>ファイルを選択して<code>OK</code>をクリックします．
+<figure class="center">
+    <img src="../figures/add_source_2.png" width="500"/> 
+</figure>
+
+ファイルをプロジェクトに追加する準備ができました．<code>Finish</code>をクリックしてウィザードを終了します．
+<figure class="center">
+    <img src="../figures/add_source_3.png" width="500"/> 
+</figure>
+</p>
+<p>プロジェクトにソースコードファイルが登録されました．制約ファイルを追加するために，もう一度，<code>Add Sources</code>をクリックしてファイルを追加するウィザードを開きます．
+<figure class="center">
+    <img src="../figures/added_source.png" width="600"/> 
+</figure>
+
+今度は，制約ファイルを追加するために，<code>Add or create constraints</code>を選択して<code>Next</code>をクリックします．
+<figure class="center">
+    <img src="../figures/wizard_to_add_xdc.png" width="500"/> 
+</figure>
+
+ファイル追加ダイアログが開くので，<code>Add Files</code>をクリックします．
+<figure class="center">
+    <img src="../figures/start_to_add_xdc.png" width="500"/> 
+</figure>
+
+追加するファイルをファイル選択ダイアログで選びます．冒頭で紹介した<code>exstickge.xdc</code>ファイルを選択して<code>OK</code>をクリックします．
+<figure class="center">
+    <img src="../figures/select_xdc.png" width="500"/> 
+</figure>
+
+ファイルをプロジェクトに追加する準備ができました．<code>Finish</code>をクリックしてウィザードを終了します．
+<figure class="center">
+    <img src="../figures/add_xdc.png" width="500"/> 
+</figure>
+</p>
+<h2 id="合成">合成</h2>
+<p>合成するには，ウィンドウ左のFlow Navigatorペインにある<code>Generate Bitstream</code>をクリックします．これで，ソースコードからFPGAのビットストリームを生成するのに必要な，<code>Synthesis</code>と<code>Implementation</code>が順に実行されます．
+<figure class="center">
+    <img src="../figures/generate_bitfile.png" width="600"/> 
+</figure>
+
+無事に合成が完了すると，<code>Bitstream Generation Completed</code>ダイアログがあらわれます．<code>Open Hardware Manager</code>を選択して<code>OK</code>をクリックしましょう．
+<figure class="center">
+    <img src="../figures/generated_bitfile.png" width="300"/> 
+</figure>
+
+もし，下のようなエラーダイアログが表示されてしまったら，ここまでの手順を再度確認してください．
+<figure class="center">
+    <img src="../figures/synthesis_error.png" width="200"/> 
+</figure>
+
+なお，生成されたビットファイルは，<code>&lt;プロジェクトディレクトリ&gt;/&lt;プロジェクト&gt;.runs/impl_1/blinkled.bit</code>です．</p>
+<h2 id="fpgaに書き込む">FPGAに書き込む</h2>
+<p>パソコンとFPGAをJTAGケーブルで接続し，電源を供給します．
+<figure class="center">
+    <img src="../figures/exstickge_connect.jpg" width="400"/> 
+</figure>
+
+<code>Bitstream Generation Completed</code>ダイアログで<code>Open Hardware Manager</code>を選択するか，<code>Flow Navigator</code>で<code>Open Hardware Manager</code>をクリックしてハードウェアマネージャを開きます．ハードウェアマネージャの上，緑のバーの<code>Open target</code>をクリックし，<code>Auto Connect</code>をクリックしてFPGAとの接続を確立しましょう．
+<figure class="center">
+    <img src="../figures/connect_fpga.png" width="600"/> 
+</figure>
+
+正しく接続できていれば，FPGAが認識されます．
+<figure class="center">
+    <img src="../figures/detect_fpga.png" width="600"/> 
+</figure>
+
+FPGAにマウスカーソルを合わせ右クリックしてコンテクストメニューを開き，<code>Program Device...</code>を選択します．
+<figure class="center">
+    <img src="../figures/fpga_programming.png" width="600"/> 
+</figure>
+
+生成されたビットストリームファイル<code>blinkled.bit</code>を選択して<code>Program</code>をクリックします．書き込みが完了するとボード上の3つのLEDが順々に点滅する様子が確認できます．
+<figure class="center">
+    <img src="../figures/select_bitfile.png" width="400"/> 
+</figure>
+</p>
+</article>
+
+      
+
+      
+    </div>
+
+    
+  
+
+  <aside class="book-toc levels-true fixed">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#ソースコード">ソースコード</a></li>
+    <li><a href="#vivadoでプロジェクトを作成">Vivadoでプロジェクトを作成</a></li>
+    <li><a href="#ファイルの追加">ファイルの追加</a></li>
+    <li><a href="#合成">合成</a></li>
+    <li><a href="#fpgaに書き込む">FPGAに書き込む</a></li>
+  </ul>
+</nav>
+  </aside>
+
+
+
+  </main>
+
+  
+</body>
+
+</html>

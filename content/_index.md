@@ -12,6 +12,7 @@ type: docs
 ## セットアップ
 
 - [インストール]({{< ref "/docs/setup/installation.md" >}})
+- [exStickGEでLチカ]({{< ref "/docs/setup/blink_led.md" >}})
 
 ## UDP/IP IPコア
 
