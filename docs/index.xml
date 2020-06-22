@@ -52,5 +52,26 @@ $ wget https://github.com/e-trees/board_files/archive/master.zip $ unzip master.
 `default_nettype none module blinkled ( input wire SYS_CLK_P, input wire SYS_CLK_N, input wire PUSH_BTN, output wire [2:0] LED ); reg[31:0] counter; wire SYS_CLK; IBUFDS SYS_CLK_BUF(.I(SYS_CLK_P),.IB(SYS_CLK_N),.O(SYS_CLK)); assign LED = counter[26:25] == 2&amp;#39;b01 ? 3&amp;#39;b001 : counter[26:25] == 2&amp;#39;b10 ? 3&amp;#39;b010 : counter[26:25] == 2&amp;#39;b11 ? 3&amp;#39;b100 : 3&amp;#39;b000; always @(posedge SYS_CLK) begin if(PUSH_BTN == 1&amp;#39;b0) begin counter &amp;lt;= 32&amp;#39;d0; end else begin counter &amp;lt;= counter + 32&amp;#39;d1; end end endmodule `default_nettype wire また，ピン配置の制約を以下のように与えます．こちらはexstickge.</description>
     </item>
     
+    <item>
+      <title>UDP/IP IPコア概要</title>
+      <link>https://e-trees.github.io/exstickge_guide/docs/udpip/udpip_overview/</link>
+      <pubDate>Wed, 30 Oct 2019 19:15:46 +0900</pubDate>
+      
+      <guid>https://e-trees.github.io/exstickge_guide/docs/udpip/udpip_overview/</guid>
+      <description>UDP/IP IPコア概要 UDP/IP IPコアはユーザロジックで簡単にUDP/IPパケットを送受信できるe-trees製のIPコアです．コアとユーザロジックは，e-treesでUPLと呼んでいる制御機構付きFIFOのようなインターフェースでデータをやりとりします．e7UDP/IP商品ページおよび，UPLとはもご覧ください．
+IPコア 入出力I/F クロック・リセット MACアクセス用のクロック(125MHz)と，ユーザロジック用のクロックを供給します．
+   ポート名 幅 方向 説明     GEPHY_MAC_CLK 1 入力 MAC用入力クロック(125MHz)   GEPHY_MAC_CLK90 1 入力 90度シフトしたMAC用入力クロック(125MHz)   Reset_n 1 入力 コアのリセット(非同期・負論理)   pUPLGlobalClk 1 入力 ユーザロジックのクロック    MAC入出力 MACに接続するポートです．FPGAのI/Oに接続します．
+   ポート名 幅 方向 説明     GEPHY_RST_N 1 出力 コアへのリセット出力   GEPHY_TD 4 出力 MACへのデータ出力   GEPHY_TXEN_ER 1 出力    GEPHY_TCK 1 出力 出力クロック   GEPHY_RD 4 入力 MACからのデータ入力   GEPHY_RCK 1 入力 入力クロック   GEPHY_RXDV_ER 1 入力    GEPHY_MDC 1 出力 MIO クロック   GEPHY_MDIO 1 入出力 MIO データ   GEPHY_INT_N 1 入力     ユーザロジック入出力 ユーザロジックからUDPパケットを送信する，到着したUDPパケットをユーザロジックで受け取るためのUPLポートです．MIIデータもUPLでやりとりします．</description>
+    </item>
+    
+    <item>
+      <title>パケットを送受信してみる</title>
+      <link>https://e-trees.github.io/exstickge_guide/docs/udpip/sendrecv_packet/</link>
+      <pubDate>Wed, 30 Oct 2019 19:15:46 +0900</pubDate>
+      
+      <guid>https://e-trees.github.io/exstickge_guide/docs/udpip/sendrecv_packet/</guid>
+      <description>パケットを送受信してみる e7UDP/IP IPコアを使ったパケット送受信方法を説明します．</description>
+    </item>
+    
   </channel>
 </rss>

@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><meta property="og:title" content="UDP/IP IPコア概要" />
+<meta property="og:description" content="UDP/IP IPコア概要 UDP/IP IPコアはユーザロジックで簡単にUDP/IPパケットを送受信できるe-trees製のIPコアです．コアとユーザロジックは，e-treesでUPLと呼んでいる制御機構付きFIFOのようなインターフェースでデータをやりとりします．e7UDP/IP商品ページおよび，UPLとはもご覧ください．
+IPコア 入出力I/F クロック・リセット MACアクセス用のクロック(125MHz)と，ユーザロジック用のクロックを供給します．
+   ポート名 幅 方向 説明     GEPHY_MAC_CLK 1 入力 MAC用入力クロック(125MHz)   GEPHY_MAC_CLK90 1 入力 90度シフトしたMAC用入力クロック(125MHz)   Reset_n 1 入力 コアのリセット(非同期・負論理)   pUPLGlobalClk 1 入力 ユーザロジックのクロック    MAC入出力 MACに接続するポートです．FPGAのI/Oに接続します．
+   ポート名 幅 方向 説明     GEPHY_RST_N 1 出力 コアへのリセット出力   GEPHY_TD 4 出力 MACへのデータ出力   GEPHY_TXEN_ER 1 出力    GEPHY_TCK 1 出力 出力クロック   GEPHY_RD 4 入力 MACからのデータ入力   GEPHY_RCK 1 入力 入力クロック   GEPHY_RXDV_ER 1 入力    GEPHY_MDC 1 出力 MIO クロック   GEPHY_MDIO 1 入出力 MIO データ   GEPHY_INT_N 1 入力     ユーザロジック入出力 ユーザロジックからUDPパケットを送信する，到着したUDPパケットをユーザロジックで受け取るためのUPLポートです．MIIデータもUPLでやりとりします．" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://e-trees.github.io/exstickge_guide/docs/udpip/udpip_overview/" />
+<meta property="article:published_time" content="2019-10-30T19:15:46+09:00" />
+<meta property="article:modified_time" content="2019-10-30T19:15:46+09:00" />
+<title>UDP/IP IPコア概要 | exStickGE Guide</title>
+<link rel="icon" href="/exstickge_guide/favicon.png" type="image/x-icon">
+
+
+<link rel="stylesheet" href="/exstickge_guide/book.min.92b28337361d2bcca5e0ffaff5092dda7140e89d9a7a7a4dcc6055fd7d702ace.css" integrity="sha256-krKDNzYdK8yl4P&#43;v9Qkt2nFA6J2aenpNzGBV/X1wKs4=">
+
+
+<script defer src="/exstickge_guide/search.min.2939547b7db29899bcd6694bb508fc7baa18cd7122f8274ce0eb8af073b22f0a.js" integrity="sha256-KTlUe32ymJm81mlLtQj8e6oYzXEi&#43;CdM4OuK8HOyLwo="></script>
+
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body>
+  <input type="checkbox" class="hidden" id="menu-control" />
+  <main class="flex container">
+
+    <aside class="book-menu fixed">
+      <nav>
+<h2 class="book-brand">
+  <a href="https://e-trees.github.io/exstickge_guide/"><span>exStickGE Guide</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" placeholder="Search" id="book-search-input" maxlength="64" />
+  <div class="book-search-spinner spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+    
+
+  
+  
+
+
+
+
+
+ 
+  
+    
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/about/board_overview/" >
+      ボード概要
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/setup/installation/" >
+      インストール
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/setup/blink_led/" >
+      exStickGEでLチカ
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/udpip/udpip_overview/"  class="active">
+      UDP/IP IPコア概要
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/udpip/sendrecv_packet/" >
+      パケットを送受信してみる
+  </a>
+
+</li>
+      
+    
+  </ul>
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+<script>
+(function() {
+  var menu = document.querySelector("aside.book-menu nav");
+  addEventListener("beforeunload", function(event) {
+    localStorage.setItem("menu.scrollTop", menu.scrollTop);
+  });
+  menu.scrollTop = localStorage.getItem("menu.scrollTop");
+})();
+</script>
+
+    </aside>
+
+    <div class="book-page">
+      <header class="flex align-center justify-between book-header">
+  <label for="menu-control">
+    <img src="/exstickge_guide/svg/menu.svg" alt="Menu" />
+  </label>
+  <strong>UDP/IP IPコア概要</strong>
+</header>
+
+      
+<article class="markdown"><h1 id="udpip-ipコア概要">UDP/IP IPコア概要</h1>
+<p>UDP/IP IPコアはユーザロジックで簡単にUDP/IPパケットを送受信できるe-trees製のIPコアです．コアとユーザロジックは，e-treesでUPLと呼んでいる制御機構付きFIFOのようなインターフェースでデータをやりとりします．<a href="https://e-trees.jp/e7-udp-ip/">e7UDP/IP商品ページ</a>および，<a href="https://e-trees.jp/upl%e3%81%a8%e3%81%af/">UPLとは</a>もご覧ください．</p>
+<h2 id="ipコア-入出力if">IPコア 入出力I/F</h2>
+<h3 id="クロックリセット">クロック・リセット</h3>
+<p>MACアクセス用のクロック(125MHz)と，ユーザロジック用のクロックを供給します．</p>
+<table>
+<thead>
+<tr>
+<th>ポート名</th>
+<th>幅</th>
+<th>方向</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GEPHY_MAC_CLK</td>
+<td>1</td>
+<td>入力</td>
+<td>MAC用入力クロック(125MHz)</td>
+</tr>
+<tr>
+<td>GEPHY_MAC_CLK90</td>
+<td>1</td>
+<td>入力</td>
+<td>90度シフトしたMAC用入力クロック(125MHz)</td>
+</tr>
+<tr>
+<td>Reset_n</td>
+<td>1</td>
+<td>入力</td>
+<td>コアのリセット(非同期・負論理)</td>
+</tr>
+<tr>
+<td>pUPLGlobalClk</td>
+<td>1</td>
+<td>入力</td>
+<td>ユーザロジックのクロック</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mac入出力">MAC入出力</h3>
+<p>MACに接続するポートです．FPGAのI/Oに接続します．</p>
+<table>
+<thead>
+<tr>
+<th>ポート名</th>
+<th>幅</th>
+<th>方向</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GEPHY_RST_N</td>
+<td>1</td>
+<td>出力</td>
+<td>コアへのリセット出力</td>
+</tr>
+<tr>
+<td>GEPHY_TD</td>
+<td>4</td>
+<td>出力</td>
+<td>MACへのデータ出力</td>
+</tr>
+<tr>
+<td>GEPHY_TXEN_ER</td>
+<td>1</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>GEPHY_TCK</td>
+<td>1</td>
+<td>出力</td>
+<td>出力クロック</td>
+</tr>
+<tr>
+<td>GEPHY_RD</td>
+<td>4</td>
+<td>入力</td>
+<td>MACからのデータ入力</td>
+</tr>
+<tr>
+<td>GEPHY_RCK</td>
+<td>1</td>
+<td>入力</td>
+<td>入力クロック</td>
+</tr>
+<tr>
+<td>GEPHY_RXDV_ER</td>
+<td>1</td>
+<td>入力</td>
+<td></td>
+</tr>
+<tr>
+<td>GEPHY_MDC</td>
+<td>1</td>
+<td>出力</td>
+<td>MIO クロック</td>
+</tr>
+<tr>
+<td>GEPHY_MDIO</td>
+<td>1</td>
+<td>入出力</td>
+<td>MIO データ</td>
+</tr>
+<tr>
+<td>GEPHY_INT_N</td>
+<td>1</td>
+<td>入力</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="ユーザロジック入出力">ユーザロジック入出力</h3>
+<p>ユーザロジックからUDPパケットを送信する，到着したUDPパケットをユーザロジックで受け取るためのUPLポートです．MIIデータもUPLでやりとりします．</p>
+<h4 id="ユーザロジック--udpip-ipコア-パケット送信">ユーザロジック → UDP/IP IPコア (パケット送信)</h4>
+<table>
+<thead>
+<tr>
+<th>ポート名</th>
+<th>幅</th>
+<th>方向</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pUdp0Send_Data</td>
+<td>32</td>
+<td>入力</td>
+<td>UDPパケット送信データの入力データ(ポート0)</td>
+</tr>
+<tr>
+<td>pUdp0Send_Request</td>
+<td>1</td>
+<td>入力</td>
+<td>UDPパケット送信データの入力制御信号(ポート0)</td>
+</tr>
+<tr>
+<td>pUdp0Send_Ack</td>
+<td>1</td>
+<td>出力</td>
+<td>UDPパケット送信データの入力制御信号(ポート0)</td>
+</tr>
+<tr>
+<td>pUdp0Send_Enable</td>
+<td>1</td>
+<td>入力</td>
+<td>UDPパケット送信データの入力制御信号(ポート0)</td>
+</tr>
+<tr>
+<td>pUdp1Send_Data</td>
+<td>32</td>
+<td>入力</td>
+<td>UDPパケット送信データの入力データ(ポート1)</td>
+</tr>
+<tr>
+<td>pUdp1Send_Request</td>
+<td>1</td>
+<td>入力</td>
+<td>UDPパケット送信データの入力制御信号(ポート1)</td>
+</tr>
+<tr>
+<td>pUdp1Send_Ack</td>
+<td>1</td>
+<td>出力</td>
+<td>UDPパケット送信データの入力制御信号(ポート1)</td>
+</tr>
+<tr>
+<td>pUdp1Send_Enable</td>
+<td>1</td>
+<td>入力</td>
+<td>UDPパケット送信データの入力制御信号(ポート1)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="udpip-ipコア--ユーザロジック-パケット受信">UDP/IP IPコア → ユーザロジック (パケット受信)</h4>
+<table>
+<thead>
+<tr>
+<th>ポート名</th>
+<th>幅</th>
+<th>方向</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pUdp0Receive_Data</td>
+<td>32</td>
+<td>出力</td>
+<td>UDPパケット受信データの出力データ(ポート0)</td>
+</tr>
+<tr>
+<td>pUdp0Receive_Request</td>
+<td>1</td>
+<td>出力</td>
+<td>UDPパケット受信データの出力制御信号(ポート0)</td>
+</tr>
+<tr>
+<td>pUdp0Receive_Ack</td>
+<td>1</td>
+<td>入力</td>
+<td>UDPパケット受信データの出力制御信号(ポート0)</td>
+</tr>
+<tr>
+<td>pUdp0Receive_Enable</td>
+<td>1</td>
+<td>出力</td>
+<td>UDPパケット受信データの出力制御信号(ポート0)</td>
+</tr>
+<tr>
+<td>pUdp1Receive_Data</td>
+<td>32</td>
+<td>出力</td>
+<td>UDPパケット受信データの出力データ(ポート0)</td>
+</tr>
+<tr>
+<td>pUdp1Receive_Request</td>
+<td>1</td>
+<td>出力</td>
+<td>UDPパケット受信データの出力制御信号(ポート0)</td>
+</tr>
+<tr>
+<td>pUdp1Receive_Ack</td>
+<td>1</td>
+<td>入力</td>
+<td>UDPパケット受信データの出力制御信号(ポート0)</td>
+</tr>
+<tr>
+<td>pUdp1Receive_Enable</td>
+<td>1</td>
+<td>出力</td>
+<td>UDPパケット受信データの出力制御信号(ポート0)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="miiインターフェース">MIIインターフェース</h4>
+<table>
+<thead>
+<tr>
+<th>ポート名</th>
+<th>幅</th>
+<th>方向</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pMIIInput_Data</td>
+<td>32</td>
+<td>入力</td>
+<td></td>
+</tr>
+<tr>
+<td>pMIIInput_Request</td>
+<td>1</td>
+<td>入力</td>
+<td></td>
+</tr>
+<tr>
+<td>pMIIInput_Ack</td>
+<td>1</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pMIIInput_Enable</td>
+<td>1</td>
+<td>入力</td>
+<td></td>
+</tr>
+<tr>
+<td>pMIIOutput_Data</td>
+<td>32</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pMIIOutput_Request</td>
+<td>1</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pMIIOutput_Ack</td>
+<td>1</td>
+<td>入力</td>
+<td></td>
+</tr>
+<tr>
+<td>pMIIOutput_Enable</td>
+<td>1</td>
+<td>出力</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="設定用パラレルポート">設定用パラレルポート</h3>
+<p>IPアドレス，MACアドレス，UDP送受信ポート番号などはパラレルポートでコアに設定します．</p>
+<table>
+<thead>
+<tr>
+<th>ポート名</th>
+<th>幅</th>
+<th>方向</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pMyIpAddr</td>
+<td>32</td>
+<td>入力</td>
+<td>IPアドレス</td>
+</tr>
+<tr>
+<td>pMyMacAddr</td>
+<td>48</td>
+<td>入力</td>
+<td>MACアドレス</td>
+</tr>
+<tr>
+<td>pMyNetmask</td>
+<td>32</td>
+<td>入力</td>
+<td>ネットマスク</td>
+</tr>
+<tr>
+<td>pDefaultGateway</td>
+<td>32</td>
+<td>入力</td>
+<td>デフォルトゲートウェア</td>
+</tr>
+<tr>
+<td>pTargetIPAddr</td>
+<td>32</td>
+<td>入力</td>
+<td>-</td>
+</tr>
+<tr>
+<td>pMyUdpPort0</td>
+<td>16</td>
+<td>入力</td>
+<td>ポート0のポート番号</td>
+</tr>
+<tr>
+<td>pMyUdpPort1</td>
+<td>16</td>
+<td>入力</td>
+<td>ポート1のポート番号</td>
+</tr>
+<tr>
+<td>pPHYAddr</td>
+<td>5</td>
+<td>入力</td>
+<td>PHYのアドレス</td>
+</tr>
+<tr>
+<td>pPHYMode</td>
+<td>4</td>
+<td>入力</td>
+<td>PHYのモード(4&rsquo;b1000)でGbEに設定</td>
+</tr>
+<tr>
+<td>pConfig_Core</td>
+<td>32</td>
+<td>入力</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="モニタリング信号">モニタリング信号</h3>
+<p>コアの動作をモニタリングするためのステータスがパラレルポートを出力します．特にモニタリングする必要がなければオープンにしてください．</p>
+<table>
+<thead>
+<tr>
+<th>ポート名</th>
+<th>幅</th>
+<th>方向</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pStatus_RxByteCount</td>
+<td>32</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_RxPacketCount</td>
+<td>32</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_RxErrorPacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_RxDropPacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_RxARPRequestPacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_RxARPReplyPacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_RxICMPPacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_RxUDP0PacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_RxUDP1PacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_RxIPErrorPacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_RxUDPErrorPacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_TxByteCount</td>
+<td>32</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_TxPacketCount</td>
+<td>32</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_TxARPRequestPacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_TxARPReplyPacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_TxICMPReplyPacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_TxUDP0PacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_TxUDP1PacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_TxMulticastPacketCount</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+<tr>
+<td>pStatus_Phy</td>
+<td>16</td>
+<td>出力</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="ipコア用デバッグ信号">IPコア用デバッグ信号</h3>
+<p>一般にユーザは利用しません．オープンにしてください．</p>
+<table>
+<thead>
+<tr>
+<th>ポート名</th>
+<th>幅</th>
+<th>方向</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pdebug</td>
+<td>64</td>
+<td>出力</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="upl">UPL</h2>
+<h2 id="verilogインタンステンプレート">Verilogインタンステンプレート</h2>
+<h3 id="インスタンス生成文">インスタンス生成文</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-verilog" data-lang="verilog">  idelayctrl_wrapper#(.CLK_PERIOD(<span style="color:#ae81ff">5</span>))(.clk(clk200M), .reset(reset200M), .ready());
+  
+  e7udpip_rgmii_artix7
+  u_e7udpip (
+    <span style="color:#75715e">// GMII PHY
+</span><span style="color:#75715e"></span>    .GEPHY_RST_N(GEPHY_RST_N),
+    .GEPHY_MAC_CLK(clk125M),
+    .GEPHY_MAC_CLK90(clk125M_90),
+    <span style="color:#75715e">// TX out
+</span><span style="color:#75715e"></span>    .GEPHY_TD(GEPHY_TD),
+    .GEPHY_TXEN_ER(GEPHY_TXEN_ER),
+    .GEPHY_TCK(GEPHY_TCK),
+    <span style="color:#75715e">// RX in
+</span><span style="color:#75715e"></span>    .GEPHY_RD(GEPHY_RD),
+    .GEPHY_RCK(GEPHY_RCK),
+    .GEPHY_RXDV_ER(GEPHY_RXDV_ER),
+    
+    .GEPHY_MDC(GEPHY_MDC),
+    .GEPHY_MDIO(GEPHY_MDIO),
+    .GEPHY_INT_N(GEPHY_INT_N),
+    
+    <span style="color:#75715e">// Asynchronous Reset
+</span><span style="color:#75715e"></span>    .Reset_n(<span style="color:#f92672">~</span>reset125M),
+    
+    <span style="color:#75715e">// UPL interface
+</span><span style="color:#75715e"></span>    .pUPLGlobalClk(clk125M),
+    
+    <span style="color:#75715e">// UDP tx input
+</span><span style="color:#75715e"></span>    .pUdp0Send_Data(pUdp0Send_Data),
+    .pUdp0Send_Request(pUdp0Send_Request),
+    .pUdp0Send_Ack(pUdp0Send_Ack),
+    .pUdp0Send_Enable(pUdp0Send_Enable),
+    
+    .pUdp1Send_Data(pUdp1Send_Data),
+    .pUdp1Send_Request(pUdp1Send_Request),
+    .pUdp1Send_Ack(pUdp1Send_Ack),
+    .pUdp1Send_Enable(pUdp1Send_Enable),
+    
+    <span style="color:#75715e">// UDP rx output
+</span><span style="color:#75715e"></span>    .pUdp0Receive_Data(pUdp0Receive_Data),
+    .pUdp0Receive_Request(pUdp0Receive_Request),
+    .pUdp0Receive_Ack(pUdp0Receive_Ack),
+    .pUdp0Receive_Enable(pUdp0Receive_Enable),
+    
+    .pUdp1Receive_Data(pUdp1Receive_Data),
+    .pUdp1Receive_Request(pUdp1Receive_Request),
+    .pUdp1Receive_Ack(pUdp1Receive_Ack),
+    .pUdp1Receive_Enable(pUdp1Receive_Enable),
+    
+    <span style="color:#75715e">// MII interface
+</span><span style="color:#75715e"></span>    .pMIIInput_Data(pMIIInput_Data),
+    .pMIIInput_Request(pMIIInput_Request),
+    .pMIIInput_Ack(pMIIInput_Ack),
+    .pMIIInput_Enable(pMIIInput_Enable),
+    
+    .pMIIOutput_Data(pMIIOutput_Data),
+    .pMIIOutput_Request(pMIIOutput_Request),
+    .pMIIOutput_Ack(pMIIOutput_Ack),
+    .pMIIOutput_Enable(pMIIOutput_Enable),
+    
+    <span style="color:#75715e">// Setup
+</span><span style="color:#75715e"></span>    .pMyIpAddr(<span style="color:#ae81ff">32&#39;h0a000003</span>),
+    .pMyMacAddr(<span style="color:#ae81ff">48&#39;h001b1affffff</span>),
+    .pMyNetmask(<span style="color:#ae81ff">32&#39;hff000000</span>),
+    .pDefaultGateway(<span style="color:#ae81ff">32&#39;h0a0000fe</span>),
+    .pTargetIPAddr(<span style="color:#ae81ff">32&#39;h0a000001</span>),
+    .pMyUdpPort0(<span style="color:#ae81ff">16&#39;h4000</span>),
+    .pMyUdpPort1(<span style="color:#ae81ff">16&#39;h4001</span>),
+    .pPHYAddr(<span style="color:#ae81ff">5</span><span style="color:#ae81ff">&#39;b00001</span>),
+    .pPHYMode(<span style="color:#ae81ff">4</span><span style="color:#ae81ff">&#39;b1000</span>),
+    .pConfig_Core(<span style="color:#ae81ff">8</span><span style="color:#ae81ff">&#39;b00000000</span>),
+    
+    <span style="color:#75715e">// Status
+</span><span style="color:#75715e"></span>    .pStatus_RxByteCount(),
+    .pStatus_RxPacketCount(),
+    .pStatus_RxErrorPacketCount(),
+    .pStatus_RxDropPacketCount(),
+    .pStatus_RxARPRequestPacketCount(),
+    .pStatus_RxARPReplyPacketCount(),
+    .pStatus_RxICMPPacketCount(),
+    .pStatus_RxUDP0PacketCount(),
+    .pStatus_RxUDP1PacketCount(),
+    .pStatus_RxIPErrorPacketCount(),
+    .pStatus_RxUDPErrorPacketCount(),
+    
+    .pStatus_TxByteCount(),
+    .pStatus_TxPacketCount(),
+    .pStatus_TxARPRequestPacketCount(),
+    .pStatus_TxARPReplyPacketCount(),
+    .pStatus_TxICMPReplyPacketCount(),
+    .pStatus_TxUDP0PacketCount(),
+    .pStatus_TxUDP1PacketCount(),
+    .pStatus_TxMulticastPacketCount(),
+    
+    .pStatus_Phy(status_phy),
+    
+    .pdebug()
+    );
+</code></pre></div><h3 id="verilog用スタブ">Verilog用スタブ</h3>
+<p>次のコードは，edifファイルを組み込むためのスタブファイルです．入出力ポートの向きやサイズの確認にご利用ください．</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-verilog" data-lang="verilog"><span style="color:#66d9ef">module</span> e7udpip_rgmii_artix7(
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        GEPHY_RST_N,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         GEPHY_MAC_CLK,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         GEPHY_MAC_CLK90,
+  <span style="color:#75715e">// TX out
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">3</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  GEPHY_TD,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        GEPHY_TXEN_ER,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        GEPHY_TCK,
+  <span style="color:#75715e">// RX in
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">3</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]   GEPHY_RD,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         GEPHY_RCK,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         GEPHY_RXDV_ER,
+  <span style="color:#75715e">//Management I/F
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        GEPHY_MDC,
+  <span style="color:#66d9ef">inout</span> <span style="color:#66d9ef">wire</span>         GEPHY_MDIO,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         GEPHY_INT_N,
+  
+  <span style="color:#75715e">// Asynchronous Reset
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         Reset_n,
+  
+  <span style="color:#75715e">// UPL interface
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         pUPLGlobalClk,
+  
+  <span style="color:#75715e">// UDP tx input
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  pUdp0Send_Data,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         pUdp0Send_Request,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        pUdp0Send_Ack,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         pUdp0Send_Enable,
+  
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  pUdp1Send_Data,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         pUdp1Send_Request,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        pUdp1Send_Ack,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         pUdp1Send_Enable,
+  
+  <span style="color:#75715e">// UDP rx output
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pUdp0Receive_Data,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        pUdp0Receive_Request,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         pUdp0Receive_Ack,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        pUdp0Receive_Enable,
+  
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pUdp1Receive_Data,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        pUdp1Receive_Request,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         pUdp1Receive_Ack,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        pUdp1Receive_Enable,
+  
+  <span style="color:#75715e">// MII interface
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  pMIIInput_Data,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         pMIIInput_Request,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        pMIIInput_Ack,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         pMIIInput_Enable,
+  
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pMIIOutput_Data,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        pMIIOutput_Request,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span>         pMIIOutput_Ack,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span>        pMIIOutput_Enable,
+  
+  <span style="color:#75715e">// Setup
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  pMyIpAddr,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">47</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  pMyMacAddr,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  pMyNetmask,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  pDefaultGateway,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  pTargetIPAddr,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  pMyUdpPort0,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  pMyUdpPort1,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">4</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]   pPHYAddr,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">3</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]   pPHYMode,
+  <span style="color:#66d9ef">input</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>]  pConfig_Core,
+  
+  <span style="color:#75715e">//Status
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_RxByteCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_RxPacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_RxErrorPacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_RxDropPacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_RxARPRequestPacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_RxARPReplyPacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_RxICMPPacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_RxUDP0PacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_RxUDP1PacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_RxIPErrorPacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_RxUDPErrorPacketCount,
+  
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_TxByteCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">31</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_TxPacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_TxARPRequestPacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_TxARPReplyPacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_TxICMPReplyPacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_TxUDP0PacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_TxUDP1PacketCount,
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_TxMulticastPacketCount,
+  
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">15</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pStatus_Phy,
+  
+  <span style="color:#66d9ef">output</span> <span style="color:#66d9ef">wire</span> [<span style="color:#ae81ff">63</span><span style="color:#f92672">:</span><span style="color:#ae81ff">0</span>] pdebug
+  );
+<span style="color:#66d9ef">endmodule</span>
+</code></pre></div><h2 id="vhdlインタンステンプレート">VHDLインタンステンプレート</h2>
+<h3 id="コンポーネント宣言">コンポーネント宣言</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-vhdl" data-lang="vhdl"><span style="color:#66d9ef">component</span> <span style="color:#a6e22e">e7udpip_rgmii_artix7</span>
+    <span style="color:#66d9ef">port</span> (
+        GEPHY_RST_N     <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic</span>;
+        GEPHY_MAC_CLK   <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic</span>;
+        GEPHY_MAC_CLK90 <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic</span>;
+		
+		<span style="color:#75715e">-- TX out</span>
+        GEPHY_TD      <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">3</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+        GEPHY_TXEN_ER <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic</span>;
+        GEPHY_TCK     <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic</span>;
+        <span style="color:#75715e">-- RX in</span>
+		GEPHY_RD      <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">3</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		GEPHY_RCK     <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic</span>;
+		GEPHY_RXDV_ER <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic</span>;
+		<span style="color:#75715e">--Management I/F</span>
+        GEPHY_MDC   <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic</span>;
+		GEPHY_MDIO  <span style="color:#f92672">:</span> <span style="color:#66d9ef">inout</span> <span style="color:#66d9ef">std_logic</span>;
+		GEPHY_INT_N <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic</span>;
+		
+	    <span style="color:#75715e">-- Asynchronous Reset</span>
+		Reset_n <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic</span>;
+		
+	    <span style="color:#75715e">-- UPL interface</span>
+		pUPLGlobalClk <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic</span>;
+		
+	    <span style="color:#75715e">-- UDP tx input</span>
+		pUdp0Send_Data    <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span>  <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pUdp0Send_Request <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span>  <span style="color:#66d9ef">std_logic</span>;
+		pUdp0Send_Ack     <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic</span>;
+		pUdp0Send_Enable  <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span>  <span style="color:#66d9ef">std_logic</span>;
+		
+		pUdp1Send_Data    <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span>  <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pUdp1Send_Request <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span>  <span style="color:#66d9ef">std_logic</span>;
+		pUdp1Send_Ack     <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic</span>;
+		pUdp1Send_Enable  <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span>  <span style="color:#66d9ef">std_logic</span>;
+		
+	    <span style="color:#75715e">-- UDP rx output</span>
+		pUdp0Receive_Data    <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pUdp0Receive_Request <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic</span>;
+		pUdp0Receive_Ack     <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span>  <span style="color:#66d9ef">std_logic</span>;
+		pUdp0Receive_Enable  <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> std_lgoic;
+        
+		pUdp1Receive_Data    <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pUdp1Receive_Request <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic</span>;
+		pUdp1Receive_Ack     <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span>  <span style="color:#66d9ef">std_logic</span>;
+		pUdp1Receive_Enable  <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> std_lgoic;
+        
+		<span style="color:#75715e">-- MII interface</span>
+		pMIIInput_Data    <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span>  <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pMIIInput_Request <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span>  <span style="color:#66d9ef">std_logic</span>;
+		pMIIInput_Ack     <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic</span>;
+		pMIIInput_Enable  <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span>  <span style="color:#66d9ef">std_logic</span>;
+		
+	    pMIIOutput_Data    <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pMIIOutput_Request <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic</span>;
+		pMIIOutput_Ack     <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic</span>;
+		pMIIOutput_Enable  <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic</span>;
+		
+		<span style="color:#75715e">-- Setup</span>
+		pMyIpAddr       <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pMyMacAddr      <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">47</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pMyNetmask      <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pDefaultGateway <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pTargetIPAddr   <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pMyUdpPort0     <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pMyUdpPort1     <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pPHYAddr        <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">4</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pPHYMode        <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">3</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pConfig_Core    <span style="color:#f92672">:</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		
+		<span style="color:#75715e">-- Status</span>
+		pStatus_RxByteCount             <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_RxPacketCount           <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_RxErrorPacketCount      <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_RxDropPacketCount       <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_RxARPRequestPacketCount <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_RxARPReplyPacketCount   <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_RxICMPPacketCount       <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_RxUDP0PacketCount       <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_RxUDP1PacketCount       <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_RxIPErrorPacketCount    <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_RxUDPErrorPacketCount   <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		
+		pStatus_TxByteCount   <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_TxPacketCount <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">31</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_TxARPRequestPacketCount <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_TxARPReplyPacketCount <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_TxICMPReplyPacketCount <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_TxUDP0PacketCount <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_TxUDP1PacketCount <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		pStatus_TxMulticastPacketCount <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		
+		pStatus_Phy <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">15</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>);
+		
+		pdebug <span style="color:#f92672">:</span> <span style="color:#66d9ef">out</span> <span style="color:#66d9ef">std_logic_vector</span>(<span style="color:#ae81ff">63</span> <span style="color:#66d9ef">downto</span> <span style="color:#ae81ff">0</span>)
+		);
+<span style="color:#66d9ef">end</span> <span style="color:#66d9ef">component</span> <span style="color:#a6e22e">e7udpip_rgmii_artix7</span>;
+</code></pre></div><h3 id="インスタンス生成の例">インスタンス生成の例</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-vhdl" data-lang="vhdl">  idelayctrl_wrapper_u <span style="color:#f92672">:</span> idelayctrl_wrapper 
+    <span style="color:#66d9ef">generic</span> <span style="color:#66d9ef">map</span>(CLK_PERIOD <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">5</span>)
+    <span style="color:#66d9ef">port</span> <span style="color:#66d9ef">map</span>(clk <span style="color:#f92672">=&gt;</span> clk200M, reset<span style="color:#f92672">=&gt;</span>reset200M, ready<span style="color:#f92672">=&gt;</span><span style="color:#66d9ef">open</span>);
+   
+  u_e7udpip <span style="color:#f92672">:</span> e7udpip_rgmii_artix7
+    <span style="color:#66d9ef">port</span> <span style="color:#66d9ef">map</span>(
+      <span style="color:#75715e">-- GMII PHY</span>
+      GEPHY_RST_N     <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      GEPHY_MAC_CLK   <span style="color:#f92672">=&gt;</span> clk125M,
+      GEPHY_MAC_CLK90 <span style="color:#f92672">=&gt;</span> clk125M_90,
+      <span style="color:#75715e">-- TX out</span>
+      GEPHY_TD      <span style="color:#f92672">=&gt;</span> GEPHY_TD,
+      GEPHY_TXEN_ER <span style="color:#f92672">=&gt;</span> GEPHY_TXEN_ER,
+      GEPHY_TCK     <span style="color:#f92672">=&gt;</span> GEPHY_TCK,
+      <span style="color:#75715e">-- RX in</span>
+      GEPHY_RD      <span style="color:#f92672">=&gt;</span> GEPHY_RD,
+      GEPHY_RCK     <span style="color:#f92672">=&gt;</span> GEPHY_RCK,
+      GEPHY_RXDV_ER <span style="color:#f92672">=&gt;</span> GEPHY_RXDV_ER,
+            
+      GEPHY_MDC   <span style="color:#f92672">=&gt;</span> GEPHY_MDC,
+      GEPHY_MDIO  <span style="color:#f92672">=&gt;</span> GEPHY_MDIO,
+      GEPHY_INT_N <span style="color:#f92672">=&gt;</span> GEPHY_INT_N,
+      
+      <span style="color:#75715e">-- Asynchronous Reset</span>
+      Reset_n <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">not</span> reset125M,
+      
+      <span style="color:#75715e">-- UPL interface</span>
+      pUPLGlobalClk <span style="color:#f92672">=&gt;</span> clk125M,
+      
+      <span style="color:#75715e">-- UDP tx input</span>
+      pUdp0Send_Data    <span style="color:#f92672">=&gt;</span> pUdp0Send_Data,
+      pUdp0Send_Request <span style="color:#f92672">=&gt;</span> pUdp0Send_Request,
+      pUdp0Send_Ack     <span style="color:#f92672">=&gt;</span> pUdp0Send_Ack,
+      pUdp0Send_Enable  <span style="color:#f92672">=&gt;</span> pUdp0Send_Enable,
+      
+      pUdp1Send_Data    <span style="color:#f92672">=&gt;</span> pUdp1Send_Data,
+      pUdp1Send_Request <span style="color:#f92672">=&gt;</span> pUdp1Send_Request,
+      pUdp1Send_Ack     <span style="color:#f92672">=&gt;</span> pUdp1Send_Ack,
+      pUdp1Send_Enable  <span style="color:#f92672">=&gt;</span> pUdp1Send_Enable,
+      
+      <span style="color:#75715e">-- UDP rx output</span>
+      pUdp0Receive_Data    <span style="color:#f92672">=&gt;</span> pUdp0Receive_Data,
+      pUdp0Receive_Request <span style="color:#f92672">=&gt;</span> pUdp0Receive_Request,
+      pUdp0Receive_Ack     <span style="color:#f92672">=&gt;</span> pUdp0Receive_Ack,
+      pUdp0Receive_Enable  <span style="color:#f92672">=&gt;</span> pUdp0Receive_Enable,
+      
+      pUdp1Receive_Data    <span style="color:#f92672">=&gt;</span> pUdp1Receive_Data,
+      pUdp1Receive_Request <span style="color:#f92672">=&gt;</span> pUdp1Receive_Request,
+      pUdp1Receive_Ack     <span style="color:#f92672">=&gt;</span> pUdp1Receive_Ack,
+      pUdp1Receive_Enable  <span style="color:#f92672">=&gt;</span> pUdp1Receive_Enable,
+      
+      <span style="color:#75715e">-- MII interface</span>
+      pMIIInput_Data    <span style="color:#f92672">=&gt;</span> pMIIInput_Data,
+      pMIIInput_Request <span style="color:#f92672">=&gt;</span> pMIIInput_Request,
+      pMIIInput_Ack     <span style="color:#f92672">=&gt;</span> pMIIInput_Ack,
+      pMIIInput_Enable  <span style="color:#f92672">=&gt;</span> pMIIInput_Enable,
+      
+      pMIIOutput_Data    <span style="color:#f92672">=&gt;</span> pMIIOutput_Data,
+      pMIIOutput_Request <span style="color:#f92672">=&gt;</span> pMIIOutput_Request,
+      pMIIOutput_Ack     <span style="color:#f92672">=&gt;</span> pMIIOutput_Ack,
+      pMIIOutput_Enable  <span style="color:#f92672">=&gt;</span> pMIIOutput_Enable,
+      
+      <span style="color:#75715e">-- Setup</span>
+      pMyIpAddr       <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">X&#34;0a000003&#34;</span>,
+      pMyMacAddr      <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">X&#34;001b1affffff&#34;</span>,
+      pMyNetmask      <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">X&#34;ff000000&#34;</span>,
+      pDefaultGateway <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">X&#34;0a0000fe&#34;</span>,
+      pTargetIPAddr   <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">X&#34;0a000001&#34;</span>,
+      pMyUdpPort0     <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">X&#34;4000&#34;</span>,
+      pMyUdpPort1     <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">X&#34;4001&#34;</span>,
+      pPHYAddr        <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;00001&#34;</span>,
+      pPHYMode        <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;1000&#34;</span>,
+      pConfig_Core    <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;00000000&#34;</span>,
+      
+      <span style="color:#75715e">-- Status</span>
+      pStatus_RxByteCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_RxPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_RxErrorPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_RxDropPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_RxARPRequestPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_RxARPReplyPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_RxICMPPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_RxUDP0PacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_RxUDP1PacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_RxIPErrorPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_RxUDPErrorPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      
+      pStatus_TxByteCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_TxPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_TxARPRequestPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_TxARPReplyPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_TxICMPReplyPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_TxUDP0PacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_TxUDP1PacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      pStatus_TxMulticastPacketCount <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>,
+      
+      pStatus_Phy <span style="color:#f92672">=&gt;</span> status_phy,
+      
+      pdebug <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">open</span>
+  );
+</code></pre></div></article>
+
+      
+
+      
+    </div>
+
+    
+  
+
+  <aside class="book-toc levels-true fixed">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#ipコア-入出力if">IPコア 入出力I/F</a>
+      <ul>
+        <li><a href="#クロックリセット">クロック・リセット</a></li>
+        <li><a href="#mac入出力">MAC入出力</a></li>
+        <li><a href="#ユーザロジック入出力">ユーザロジック入出力</a></li>
+        <li><a href="#設定用パラレルポート">設定用パラレルポート</a></li>
+        <li><a href="#モニタリング信号">モニタリング信号</a></li>
+        <li><a href="#ipコア用デバッグ信号">IPコア用デバッグ信号</a></li>
+      </ul>
+    </li>
+    <li><a href="#upl">UPL</a></li>
+    <li><a href="#verilogインタンステンプレート">Verilogインタンステンプレート</a>
+      <ul>
+        <li><a href="#インスタンス生成文">インスタンス生成文</a></li>
+        <li><a href="#verilog用スタブ">Verilog用スタブ</a></li>
+      </ul>
+    </li>
+    <li><a href="#vhdlインタンステンプレート">VHDLインタンステンプレート</a>
+      <ul>
+        <li><a href="#コンポーネント宣言">コンポーネント宣言</a></li>
+        <li><a href="#インスタンス生成の例">インスタンス生成の例</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </aside>
+
+
+
+  </main>
+
+  
+</body>
+
+</html>

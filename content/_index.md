@@ -14,10 +14,10 @@ type: docs
 - [インストール]({{< ref "/docs/setup/installation.md" >}})
 - [exStickGEでLチカ]({{< ref "/docs/setup/blink_led.md" >}})
 
-## UDP/IP IPコア
+## 付属UDP/IP IPコアの利用
 
-- パケットを送信してみる
-- パケットを受信してみる
+- [UDP/IP IPコア概要]({{< ref "/docs/udpip/udpip_overview.md" >}})
+- [パケットの送受信]({{< ref "/docs/udpip/sendrecv_packet.md" >}})
 
 ## サンプル事例
 
