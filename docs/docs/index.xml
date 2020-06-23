@@ -53,15 +53,38 @@ $ wget https://github.com/e-trees/board_files/archive/master.zip $ unzip master.
     </item>
     
     <item>
+      <title>サンプルのビルドと実行</title>
+      <link>https://e-trees.github.io/exstickge_guide/docs/setup/build_examples/</link>
+      <pubDate>Wed, 30 Oct 2019 19:15:46 +0900</pubDate>
+      
+      <guid>https://e-trees.github.io/exstickge_guide/docs/setup/build_examples/</guid>
+      <description>サンプルのビルドと実行 exStickGEのサンプルはGitHubのe-trees/exstickge_samplesリポジトリで公開されています．各サンプルのビルドは次の通りです．なお，サンプルは，Vivado 2019.1でビルドすることが想定されています．
+ リポジトリをクローンする IPコアをedifディレクトリ下にコピー ビルドしたいプロジェクトをスクリプトでビルド 生成したビットファイルをFPGAに書き込み 操作  以下，それぞれの手順の詳細を説明します．
+リポジトリのクローン リポジトリを手元にダウンロードしてください．
+CUIで，以下のコマンドを実行するか，
+$ git clone https://github.com/e-trees/exstickge_samples.git または，GUIのGitクライアントで https://github.com/e-trees/exstickge_samples.git をクローンしてください．
+IPコアの配置 IPコアは，リポジトリにアップロードされていません．exStickGEを購入した時のガイドに従って，e7udpip_rgmii_artix7.edifを入手し，exsticge_samples/edif の下にコピーしてください．
+なお，対応するedifのmd5値は，e7udpip_rgmii_artix7.edif.md5 の通りです．ビルドや動作がうまくいかない場合には，手元のIPコアのmd5値のご確認の上，お問い合わせよりご連絡ください．
+ビルド 各サンプルは，それぞれのビルドスクリプト create_project.tcl でビルドできます．たとえば，受信パケットを折り返して送信するプロジェクト exStickGE_udpip_loopback をビルドする手順は次の通りです．
+Linuxの場合 $ source /tools/Xilinx/Vivado/2019.1/settings64.sh $ cd exstickge_samples/exStickGE_udpip_loopback $ vivado -mode batch -source ./create_project.tcl Windowsの場合 スタートメニューから，VivadoのDOSプロントを開き，
+$ cd exstickge_samples\exStickGE_udpip_loopback $ vivado -mode batch -source create_project.tcl ビルド結果の確認 ビルド結果は，ログファイルで確認できるほか，生成されるプロジェクトファイル(prj/*.xpr)をVivadoで開いて確認することができます．
+ビットファイルの書き込み ビットファイルは，prj/*.runs/impl_1/の下に作成されます．exStickGE_udpip_loopback であれば，prj/exstickge_udpip_loopback.runs/impl_1/top.bitです．VivadoのHardware ManagerでFPGAに書き込んでください．
+操作 サンプルの多くはPCとネットワーク接続してアクセスできます．たとえば，exStickGE_udpip_loopbackに対しては，次のようなRubyスクリプトでexStickGEに対してパケットの送受信ができます．
+#!/usr/bin/ruby # exStickGEにパケットを送信する require &amp;#34;socket&amp;#34; socket = UDPSocket.</description>
+    </item>
+    
+    <item>
       <title>UDP/IP IPコア概要</title>
       <link>https://e-trees.github.io/exstickge_guide/docs/udpip/udpip_overview/</link>
       <pubDate>Wed, 30 Oct 2019 19:15:46 +0900</pubDate>
       
       <guid>https://e-trees.github.io/exstickge_guide/docs/udpip/udpip_overview/</guid>
-      <description>UDP/IP IPコア概要 UDP/IP IPコアはユーザロジックで簡単にUDP/IPパケットを送受信できるe-trees製のIPコアです．コアとユーザロジックは，e-treesでUPLと呼んでいる制御機構付きFIFOのようなインターフェースでデータをやりとりします．e7UDP/IP商品ページおよび，UPLとはもご覧ください．
-IPコア 入出力I/F クロック・リセット MACアクセス用のクロック(125MHz)と，ユーザロジック用のクロックを供給します．
-   ポート名 幅 方向 説明     GEPHY_MAC_CLK 1 入力 MAC用入力クロック(125MHz)   GEPHY_MAC_CLK90 1 入力 90度シフトしたMAC用入力クロック(125MHz)   Reset_n 1 入力 コアのリセット(非同期・負論理)   pUPLGlobalClk 1 入力 ユーザロジックのクロック    MAC入出力 MACに接続するポートです．FPGAのI/Oに接続します．
-   ポート名 幅 方向 説明     GEPHY_RST_N 1 出力 コアへのリセット出力   GEPHY_TD 4 出力 MACへのデータ出力   GEPHY_TXEN_ER 1 出力    GEPHY_TCK 1 出力 出力クロック   GEPHY_RD 4 入力 MACからのデータ入力   GEPHY_RCK 1 入力 入力クロック   GEPHY_RXDV_ER 1 入力    GEPHY_MDC 1 出力 MIO クロック   GEPHY_MDIO 1 入出力 MIO データ   GEPHY_INT_N 1 入力     ユーザロジック入出力 ユーザロジックからUDPパケットを送信する，到着したUDPパケットをユーザロジックで受け取るためのUPLポートです．MIIデータもUPLでやりとりします．</description>
+      <description>UDP/IP IPコア概要 UDP/IP IPコアはユーザロジックで簡単にUDP/IPパケットを送受信できるe-trees製のIPコアです．コアとユーザロジックは，e-treesでUPLと呼んでいる制御機構付きFIFOのようなインターフェースでデータをやりとりします．コアの詳細は，e7UDP/IP商品ページをご覧ください．
+UPLフォーマット e-treesでは，ハードウェアを構成するモジュール群の物理的な接続を
+ Reqeust，Ack，Enableの3つの制御信号 Strobe信号(オプション) データバス(8, 32, 64bitなど．データをシリアライズ化して転送)  に限定したUPLと呼ぶインターフェースをIPコアの標準インターフェースに採用しています． UPLを使ってモジュール同士のデータ授受をシリアライズ化したパケットとしてやり取りすることで，モジュール間接続が簡単になります．UPLの詳細は，UPLとはをご覧ください．
+受信パケットフォーマット IPコアは，受信したUDP/IPパケットを次のフォーマットでUPLに出力します．
+   # 内容     0 送信先IPアドレス(exStickGEのIPアドレス)   1 送信元IPアドレス   2 送信先ポート番号, 送信元ポート番号   3 データバイト数   4〜 データ    送信パケットフォーマット IPコアをからUDP/IPパケットを送信するには，次のフォーマットでUPLにデータを供給します．
+   # 内容     0 送信送り元IPアドレス(exStickGEのIPアドレス)   1 送信先IPアドレス   2 送信元ポート番号，送信先ポート番号,   3 データバイト数   4〜 データ    実際のデータ例 次のスクリーンショットは，IPコアが受信したパケットがUPLから出力されている様子をキャプチャしたものです(クリックで拡大)．</description>
     </item>
     
     <item>
@@ -70,7 +93,12 @@ IPコア 入出力I/F クロック・リセット MACアクセス用のクロッ
       <pubDate>Wed, 30 Oct 2019 19:15:46 +0900</pubDate>
       
       <guid>https://e-trees.github.io/exstickge_guide/docs/udpip/sendrecv_packet/</guid>
-      <description>パケットを送受信してみる e7UDP/IP IPコアを使ったパケット送受信方法を説明します．</description>
+      <description>パケットを送受信してみる e7UDP/IP IPコアを使ったパケット送受信方法を説明します．
+ループバック exStickGEで受信したパケットをそのまま送信するループバックしてみます．これは単に，IPコアの出力UPLを入力UPLに接続するだけで実現できます．
+ソースコードは，exstickge_samples/exStickGE_udpip_loopback/sources/top.v をご覧ください．
+assign pUdp0Send_Data = pUdp0Receive_Data; assign pUdp0Send_Request = pUdp0Receive_Request; assign pUdp0Receive_Ack = pUdp0Send_Ack; assign pUdp0Send_Enable = pUdp0Receive_Enable; assign pUdp1Send_Data = pUdp1Receive_Data; assign pUdp1Send_Request = pUdp1Receive_Request; assign pUdp1Receive_Ack = pUdp1Send_Ack; assign pUdp1Send_Enable = pUdp1Receive_Enable; の部分がループバックに相当します．
+UDP/IPパケットを送信する UDP/IPパケットを送信するには，UDP/IP IPコア概要で紹介した，次のフォーマットに従ったデータ列をUPLから入力します．
+   # 内容     0 送信送り元IPアドレス(exStickGEのIPアドレス)   1 送信先IPアドレス   2 送信元ポート番号，送信先ポート番号,   3 データバイト数   4〜 データ    適当なステートマシンで，UPLフォーマットに従ったデータ列を生成することで任意のUDPパケットをexStickGEから送出できます．</description>
     </item>
     
   </channel>

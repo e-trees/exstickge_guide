@@ -4,7 +4,12 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta property="og:title" content="パケットを送受信してみる" />
-<meta property="og:description" content="パケットを送受信してみる e7UDP/IP IPコアを使ったパケット送受信方法を説明します．" />
+<meta property="og:description" content="パケットを送受信してみる e7UDP/IP IPコアを使ったパケット送受信方法を説明します．
+ループバック exStickGEで受信したパケットをそのまま送信するループバックしてみます．これは単に，IPコアの出力UPLを入力UPLに接続するだけで実現できます．
+ソースコードは，exstickge_samples/exStickGE_udpip_loopback/sources/top.v をご覧ください．
+assign pUdp0Send_Data = pUdp0Receive_Data; assign pUdp0Send_Request = pUdp0Receive_Request; assign pUdp0Receive_Ack = pUdp0Send_Ack; assign pUdp0Send_Enable = pUdp0Receive_Enable; assign pUdp1Send_Data = pUdp1Receive_Data; assign pUdp1Send_Request = pUdp1Receive_Request; assign pUdp1Receive_Ack = pUdp1Send_Ack; assign pUdp1Send_Enable = pUdp1Receive_Enable; の部分がループバックに相当します．
+UDP/IPパケットを送信する UDP/IPパケットを送信するには，UDP/IP IPコア概要で紹介した，次のフォーマットに従ったデータ列をUPLから入力します．
+   # 内容     0 送信送り元IPアドレス(exStickGEのIPアドレス)   1 送信先IPアドレス   2 送信元ポート番号，送信先ポート番号,   3 データバイト数   4〜 データ    適当なステートマシンで，UPLフォーマットに従ったデータ列を生成することで任意のUDPパケットをexStickGEから送出できます．" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://e-trees.github.io/exstickge_guide/docs/udpip/sendrecv_packet/" />
 <meta property="article:published_time" content="2019-10-30T19:15:46+09:00" />
@@ -16,7 +21,7 @@
 <link rel="stylesheet" href="/exstickge_guide/book.min.92b28337361d2bcca5e0ffaff5092dda7140e89d9a7a7a4dcc6055fd7d702ace.css" integrity="sha256-krKDNzYdK8yl4P&#43;v9Qkt2nFA6J2aenpNzGBV/X1wKs4=">
 
 
-<script defer src="/exstickge_guide/search.min.2939547b7db29899bcd6694bb508fc7baa18cd7122f8274ce0eb8af073b22f0a.js" integrity="sha256-KTlUe32ymJm81mlLtQj8e6oYzXEi&#43;CdM4OuK8HOyLwo="></script>
+<script defer src="/exstickge_guide/search.min.68aa2105ee2ca9639dda62a681004c6239edca00ceedad08fc6eb09dd1246b17.js" integrity="sha256-aKohBe4sqWOd2mKmgQBMYjntygDO7a0I/G6wndEkaxc="></script>
 
 <!--
 Made with Book Theme
@@ -100,6 +105,16 @@ https://github.com/alex-shpak/hugo-book
       
         <li>
 
+  <a href="/exstickge_guide/docs/setup/build_examples/" >
+      サンプルのビルドと実行
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
   <a href="/exstickge_guide/docs/udpip/udpip_overview/" >
       UDP/IP IPコア概要
   </a>
@@ -160,6 +175,85 @@ https://github.com/alex-shpak/hugo-book
       
 <article class="markdown"><h1 id="パケットを送受信してみる">パケットを送受信してみる</h1>
 <p>e7UDP/IP IPコアを使ったパケット送受信方法を説明します．</p>
+<h2 id="ループバック">ループバック</h2>
+<p>exStickGEで受信したパケットをそのまま送信するループバックしてみます．これは単に，IPコアの出力UPLを入力UPLに接続するだけで実現できます．</p>
+<p>ソースコードは，<a href="https://github.com/e-trees/exstickge_samples/blob/master/exStickGE_udpip_loopback/sources/top.v">exstickge_samples/exStickGE_udpip_loopback/sources/top.v</a> をご覧ください．</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-verilog" data-lang="verilog">   <span style="color:#66d9ef">assign</span> pUdp0Send_Data    <span style="color:#f92672">=</span> pUdp0Receive_Data;
+   <span style="color:#66d9ef">assign</span> pUdp0Send_Request <span style="color:#f92672">=</span> pUdp0Receive_Request;
+   <span style="color:#66d9ef">assign</span> pUdp0Receive_Ack  <span style="color:#f92672">=</span> pUdp0Send_Ack;
+   <span style="color:#66d9ef">assign</span> pUdp0Send_Enable  <span style="color:#f92672">=</span> pUdp0Receive_Enable;
+   
+   <span style="color:#66d9ef">assign</span> pUdp1Send_Data    <span style="color:#f92672">=</span> pUdp1Receive_Data;
+   <span style="color:#66d9ef">assign</span> pUdp1Send_Request <span style="color:#f92672">=</span> pUdp1Receive_Request;
+   <span style="color:#66d9ef">assign</span> pUdp1Receive_Ack  <span style="color:#f92672">=</span> pUdp1Send_Ack;
+   <span style="color:#66d9ef">assign</span> pUdp1Send_Enable  <span style="color:#f92672">=</span> pUdp1Receive_Enable;
+</code></pre></div><p>の部分がループバックに相当します．</p>
+<h2 id="udpipパケットを送信する">UDP/IPパケットを送信する</h2>
+<p>UDP/IPパケットを送信するには，<a href="https://e-trees.github.io/exstickge_guide/docs/udpip/udpip_overview/">UDP/IP IPコア概要</a>で紹介した，次のフォーマットに従ったデータ列をUPLから入力します．</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>送信送り元IPアドレス(exStickGEのIPアドレス)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>送信先IPアドレス</td>
+</tr>
+<tr>
+<td>2</td>
+<td>送信元ポート番号，送信先ポート番号,</td>
+</tr>
+<tr>
+<td>3</td>
+<td>データバイト数</td>
+</tr>
+<tr>
+<td>4〜</td>
+<td>データ</td>
+</tr>
+</tbody>
+</table>
+<p>適当なステートマシンで，UPLフォーマットに従ったデータ列を生成することで任意のUDPパケットをexStickGEから送出できます．</p>
+<h2 id="udpipパケットを受信する">UDP/IPパケットを受信する</h2>
+<p>受信したUDP/IPパケットをユーザロジックで利用するには，<a href="https://e-trees.github.io/exstickge_guide/docs/udpip/udpip_overview/">UDP/IP IPコア概要</a>で紹介した，次のフォーマットのデータ列をUPLから受け取ります．</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>送信送り元IPアドレス(exStickGEのIPアドレス)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>送信先IPアドレス</td>
+</tr>
+<tr>
+<td>2</td>
+<td>送信元ポート番号，送信先ポート番号,</td>
+</tr>
+<tr>
+<td>3</td>
+<td>データバイト数</td>
+</tr>
+<tr>
+<td>4〜</td>
+<td>データ</td>
+</tr>
+</tbody>
+</table>
+<p>適当なステートマシンで，UPLフォーマットに従ったデータ列を解析してデータ部分を取り出すことで，exStickGEが受信したデータをユーザロジックで利用できます．</p>
 </article>
 
       
@@ -171,7 +265,13 @@ https://github.com/alex-shpak/hugo-book
   
 
   <aside class="book-toc levels-true fixed">
-    <nav id="TableOfContents"></nav>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#ループバック">ループバック</a></li>
+    <li><a href="#udpipパケットを送信する">UDP/IPパケットを送信する</a></li>
+    <li><a href="#udpipパケットを受信する">UDP/IPパケットを受信する</a></li>
+  </ul>
+</nav>
   </aside>
 
 
