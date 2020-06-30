@@ -20,6 +20,10 @@ type: docs
 - [UDP/IP IPコア概要]({{< ref "/docs/udpip/udpip_overview.md" >}})
 - [パケットの送受信]({{< ref "/docs/udpip/sendrecv_packet.md" >}})
 
+## 搭載デバイスの利用
+
+- [DDR DRAMの利用]({{< ref "/docs/devices/dram_guide.md" >}})
+
 ## サンプル事例
 - [exStickGE_udpip_loopback](https://github.com/e-trees/exstickge_samples/tree/master/exStickGE_udpip_loopback)
   - exStickGEに到達したUDPパケットを折り返すだけのサンプルです．コアのインスタンス生成方法の確認に．

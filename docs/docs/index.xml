@@ -101,5 +101,17 @@ UDP/IPパケットを送信する UDP/IPパケットを送信するには，UDP/
    # 内容     0 送信送り元IPアドレス(exStickGEのIPアドレス)   1 送信先IPアドレス   2 送信元ポート番号，送信先ポート番号,   3 データバイト数   4〜 データ    適当なステートマシンで，UPLフォーマットに従ったデータ列を生成することで任意のUDPパケットをexStickGEから送出できます．</description>
     </item>
     
+    <item>
+      <title>DDR DRAMを利用する</title>
+      <link>https://e-trees.github.io/exstickge_guide/docs/devices/dram_guide/</link>
+      <pubDate>Wed, 30 Oct 2019 19:15:46 +0900</pubDate>
+      
+      <guid>https://e-trees.github.io/exstickge_guide/docs/devices/dram_guide/</guid>
+      <description>DDR DRAMの利用 exStickGEは256MBのDDR DRAMを搭載しています．FPGA内のBRAMには収まらないデータを扱うために利用できます．
+XilinxのMIGを使うサンプル DDR DRAMは，XilinxのMIGで生成したIPコアを使ってアクセスするのが便利です．Vivadoの Preferred Language を Verilog に指定しておくと，MIGで生成するコアでAXI4インターフェースを利用できて便利です(Preferred Language を Verilog に設定しても 他のモジュールをVHDLで記述することができます)．
+exStickGEのサンプル exStickGE_test で DDR DRAMを利用する簡単なサンプルを公開しています．このサンプルでは，axi4m_to_fifoおよびfifo_to_axi4mを介して，VIOを使ってDDR DRAMメモリを読み書きできます．
+MIGに設定するパラメタは，mig_a.prjと，MIGで作ったIPコアのインスタンス生成と接続はtop.vを，それぞれ参照してください．</description>
+    </item>
+    
   </channel>
 </rss>

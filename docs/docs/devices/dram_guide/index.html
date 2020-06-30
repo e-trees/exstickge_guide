@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><meta property="og:title" content="DDR DRAMを利用する" />
+<meta property="og:description" content="DDR DRAMの利用 exStickGEは256MBのDDR DRAMを搭載しています．FPGA内のBRAMには収まらないデータを扱うために利用できます．
+XilinxのMIGを使うサンプル DDR DRAMは，XilinxのMIGで生成したIPコアを使ってアクセスするのが便利です．Vivadoの Preferred Language を Verilog に指定しておくと，MIGで生成するコアでAXI4インターフェースを利用できて便利です(Preferred Language を Verilog に設定しても 他のモジュールをVHDLで記述することができます)．
+exStickGEのサンプル exStickGE_test で DDR DRAMを利用する簡単なサンプルを公開しています．このサンプルでは，axi4m_to_fifoおよびfifo_to_axi4mを介して，VIOを使ってDDR DRAMメモリを読み書きできます．
+MIGに設定するパラメタは，mig_a.prjと，MIGで作ったIPコアのインスタンス生成と接続はtop.vを，それぞれ参照してください．" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://e-trees.github.io/exstickge_guide/docs/devices/dram_guide/" />
+<meta property="article:published_time" content="2019-10-30T19:15:46+09:00" />
+<meta property="article:modified_time" content="2019-10-30T19:15:46+09:00" />
+<title>DDR DRAMを利用する | exStickGE Guide</title>
+<link rel="icon" href="/exstickge_guide/favicon.png" type="image/x-icon">
+
+
+<link rel="stylesheet" href="/exstickge_guide/book.min.92b28337361d2bcca5e0ffaff5092dda7140e89d9a7a7a4dcc6055fd7d702ace.css" integrity="sha256-krKDNzYdK8yl4P&#43;v9Qkt2nFA6J2aenpNzGBV/X1wKs4=">
+
+
+<script defer src="/exstickge_guide/search.min.8820d416146186b7e14b52751ac2b7b15807b1bbc440898f59389681089481fb.js" integrity="sha256-iCDUFhRhhrfhS1J1GsK3sVgHsbvEQImPWTiWgQiUgfs="></script>
+
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body>
+  <input type="checkbox" class="hidden" id="menu-control" />
+  <main class="flex container">
+
+    <aside class="book-menu fixed">
+      <nav>
+<h2 class="book-brand">
+  <a href="https://e-trees.github.io/exstickge_guide/"><span>exStickGE Guide</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" placeholder="Search" id="book-search-input" maxlength="64" />
+  <div class="book-search-spinner spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+    
+
+  
+  
+
+
+
+
+
+ 
+  
+    
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/about/board_overview/" >
+      ボード概要
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/setup/installation/" >
+      インストール
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/setup/blink_led/" >
+      exStickGEでLチカ
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/setup/build_examples/" >
+      サンプルのビルドと実行
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/udpip/udpip_overview/" >
+      UDP/IP IPコア概要
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/udpip/sendrecv_packet/" >
+      パケットを送受信してみる
+  </a>
+
+</li>
+      
+    
+      
+        <li>
+
+  <a href="/exstickge_guide/docs/devices/dram_guide/"  class="active">
+      DDR DRAMを利用する
+  </a>
+
+</li>
+      
+    
+  </ul>
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+<script>
+(function() {
+  var menu = document.querySelector("aside.book-menu nav");
+  addEventListener("beforeunload", function(event) {
+    localStorage.setItem("menu.scrollTop", menu.scrollTop);
+  });
+  menu.scrollTop = localStorage.getItem("menu.scrollTop");
+})();
+</script>
+
+    </aside>
+
+    <div class="book-page">
+      <header class="flex align-center justify-between book-header">
+  <label for="menu-control">
+    <img src="/exstickge_guide/svg/menu.svg" alt="Menu" />
+  </label>
+  <strong>DDR DRAMを利用する</strong>
+</header>
+
+      
+<article class="markdown"><h1 id="ddr-dramの利用">DDR DRAMの利用</h1>
+<p>exStickGEは256MBのDDR DRAMを搭載しています．FPGA内のBRAMには収まらないデータを扱うために利用できます．</p>
+<h2 id="xilinxのmigを使うサンプル">XilinxのMIGを使うサンプル</h2>
+<p>DDR DRAMは，XilinxのMIGで生成したIPコアを使ってアクセスするのが便利です．Vivadoの Preferred Language を Verilog に指定しておくと，MIGで生成するコアでAXI4インターフェースを利用できて便利です(Preferred Language を Verilog に設定しても 他のモジュールをVHDLで記述することができます)．</p>
+<p>exStickGEのサンプル <a href="https://github.com/e-trees/exstickge_samples/tree/master/exStickGE_test">exStickGE_test</a> で DDR DRAMを利用する簡単なサンプルを公開しています．このサンプルでは，<code>axi4m_to_fifo</code>および<code>fifo_to_axi4m</code>を介して，<code>VIO</code>を使ってDDR DRAMメモリを読み書きできます．</p>
+<p>MIGに設定するパラメタは，<a href="https://github.com/e-trees/exstickge_samples/blob/master/exStickGE_test/ip/mig_a.prj">mig_a.prj</a>と，MIGで作ったIPコアのインスタンス生成と接続は<a href="https://github.com/e-trees/exstickge_samples/blob/master/exStickGE_test/sources/top.v">top.v</a>を，それぞれ参照してください．</p>
+</article>
+
+      
+
+      
+    </div>
+
+    
+  
+
+  <aside class="book-toc levels-true fixed">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#xilinxのmigを使うサンプル">XilinxのMIGを使うサンプル</a></li>
+  </ul>
+</nav>
+  </aside>
+
+
+
+  </main>
+
+  
+</body>
+
+</html>
