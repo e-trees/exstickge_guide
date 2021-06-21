@@ -51,6 +51,19 @@ IPコアをからUDP/IPパケットを送信するには，次のフォーマッ
 
 `10.0.0.1(0a000001)`の`0xc10c`番ポートから`10.0.0.3(0a000001)`の`0x4000`番ポートに対して，11バイト(`0x0000000b`)のデータが送られています．データが有効な期間は`Enable`が`'1'`にアサートされ続けています．
 
+なお，これは，以下のようなスクリプトを`10.0.0.1`のホストで実行した場合の例です．
+
+```ruby
+#!/usr/bin/ruby
+
+require "socket"
+
+udp = UDPSocket.open()
+sockaddr = Socket.pack_sockaddr_in(16384, "10.0.0.3")
+udp.send("Hello World", 0, sockaddr)
+udp.close
+```
+
 ## IPコア 入出力I/F
 
 ### クロック・リセット
