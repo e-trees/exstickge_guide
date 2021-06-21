@@ -21,7 +21,7 @@ UPLフォーマット e-treesでは，ハードウェアを構成するモジュ
 <link rel="stylesheet" href="/exstickge_guide/book.min.92b28337361d2bcca5e0ffaff5092dda7140e89d9a7a7a4dcc6055fd7d702ace.css" integrity="sha256-krKDNzYdK8yl4P&#43;v9Qkt2nFA6J2aenpNzGBV/X1wKs4=">
 
 
-<script defer src="/exstickge_guide/search.min.8820d416146186b7e14b52751ac2b7b15807b1bbc440898f59389681089481fb.js" integrity="sha256-iCDUFhRhhrfhS1J1GsK3sVgHsbvEQImPWTiWgQiUgfs="></script>
+<script defer src="/exstickge_guide/search.min.f328f9a4ad3c18ad2dd475ba7291a2b33ed6384fa3feb2b1c3d953f727558dd7.js" integrity="sha256-8yj5pK08GK0t1HW6cpGisz7WOE&#43;j/rKxw9lT9ydVjdc="></script>
 
 <!--
 Made with Book Theme
@@ -265,7 +265,16 @@ UPLを使ってモジュール同士のデータ授受をシリアライズ化�
 </figure>
 
 <p><code>10.0.0.1(0a000001)</code>の<code>0xc10c</code>番ポートから<code>10.0.0.3(0a000001)</code>の<code>0x4000</code>番ポートに対して，11バイト(<code>0x0000000b</code>)のデータが送られています．データが有効な期間は<code>Enable</code>が<code>'1'</code>にアサートされ続けています．</p>
-<h2 id="ipコア-入出力if">IPコア 入出力I/F</h2>
+<p>なお，これは，以下のようなスクリプトを<code>10.0.0.1</code>のホストで実行した場合の例です．</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e">#!/usr/bin/ruby</span>
+
+require <span style="color:#e6db74">&#34;socket&#34;</span>
+
+udp <span style="color:#f92672">=</span> <span style="color:#66d9ef">UDPSocket</span><span style="color:#f92672">.</span>open()
+sockaddr <span style="color:#f92672">=</span> <span style="color:#66d9ef">Socket</span><span style="color:#f92672">.</span>pack_sockaddr_in(<span style="color:#ae81ff">16384</span>, <span style="color:#e6db74">&#34;10.0.0.3&#34;</span>)
+udp<span style="color:#f92672">.</span>send(<span style="color:#e6db74">&#34;Hello World&#34;</span>, <span style="color:#ae81ff">0</span>, sockaddr)
+udp<span style="color:#f92672">.</span>close
+</code></pre></div><h2 id="ipコア-入出力if">IPコア 入出力I/F</h2>
 <h3 id="クロックリセット">クロック・リセット</h3>
 <p>MACアクセス用のクロック(125MHz)と，ユーザロジック用のクロックを供給します．</p>
 <table>
